@@ -1,0 +1,341 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # NOVAS SERVIÇOS MAESTRO AI ENGINE v3
+  # ============================================
+
+  # Brain - FastAPI Backend (WebSocket, Voice, Chat, Agents)
+  maestro-brain:
+    image: maestro-brain:latest
+    container_name: maestro-brain
+    build:
+      context: ./brain
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - LITELLM_BASE_URL=http://maestro-litellm:4000
+      - QDRANT_HOST=maestro-qdrant
+      - QDRANT_PORT=6333
+      - POSTGRES_HOST=maestro-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=maestroapp
+      - POSTGRES_USER=maestro
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=maestro-redis
+      - REDIS_PORT=6379
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+    networks:
+      - maestro-net
+    depends_on:
+      - maestro-litellm
+      - maestro-qdrant
+      - maestro-postgres
+      - maestro-redis
+    restart: unless-stopped
+    volumes:
+      - ./brain:/app
+      - brain-uploads:/app/uploads
+
+  # CrewAI - Multi-Agent Orchestration
+  maestro-crewai:
+    image: maestro-crewai:latest
+    container_name: maestro-crewai
+    build:
+      context: ./crewai
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      - LITELLM_BASE_URL=http://maestro-litellm:4000
+      - QDRANT_HOST=maestro-qdrant
+      - QDRANT_PORT=6333
+      - POSTGRES_HOST=maestro-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=maestroapp
+      - POSTGRES_USER=maestro
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_HOST=maestro-redis
+      - REDIS_PORT=6379
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - BRAVE_API_KEY=${BRAVE_API_KEY}
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY}
+    networks:
+      - maestro-net
+    depends_on:
+      - maestro-litellm
+      - maestro-qdrant
+      - maestro-postgres
+      - maestro-redis
+    restart: unless-stopped
+    volumes:
+      - ./crewai:/app
+
+  # Dashboard - Web Interface
+  maestro-dashboard:
+    image: maestro-dashboard:latest
+    container_name: maestro-dashboard
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3333:80"
+    environment:
+      - BRAIN_API_URL=http://maestro-brain:8000
+      - CREWAI_API_URL=http://maestro-crewai:8002
+      - LITELLM_URL=http://maestro-litellm:4000
+    networks:
+      - maestro-net
+    depends_on:
+      - maestro-brain
+      - maestro-crewai
+    restart: unless-stopped
+    volumes:
+      - ./dashboard:/usr/share/nginx/html
+
+  # Voice Service - Faster Whisper + ElevenLabs
+  maestro-voice:
+    image: maestro-voice:latest
+    container_name: maestro-voice
+    build:
+      context: ./voice
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    environment:
+      - LITELLM_BASE_URL=http://maestro-litellm:4000
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    networks:
+      - maestro-net
+    depends_on:
+      - maestro-litellm
+    restart: unless-stopped
+    volumes:
+      - voice-cache:/app/cache
+
+  # ============================================
+  # SERVIÇOS EXISTENTES (MANTER)
+  # ============================================
+
+  maestro-api:
+    image: maestro-api:latest
+    container_name: maestro-api
+    ports:
+      - "8001:8001"
+    networks:
+      - maestro-net
+    restart: unless-stopped
+
+  maestro-webhook:
+    image: maestro-webhook:latest
+    container_name: maestro-webhook
+    ports:
+      - "5679:5679"
+    networks:
+      - maestro-net
+    restart: unless-stopped
+
+  maestro-litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: maestro-litellm
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=postgresql://maestro:${POSTGRES_PASSWORD}@maestro-postgres:5432/maestroapp
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY}
+      - STORE_MODEL_IN_DB=False
+      - CACHE=True
+      - CACHE_PARAMS=redis://maestro-redis:6379/0
+    networks:
+      - maestro-net
+    depends_on:
+      - maestro-postgres
+      - maestro-redis
+    restart: unless-stopped
+    volumes:
+      - ./litellm-config:/app/config
+
+  maestro-n8n:
+    image: n8nio/n8n:latest
+    container_name: maestro-n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=maestro-postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=maestroapp
+      - DB_POSTGRESDB_USER=maestro
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+      - EXECUTIONS_MODE=regular
+    networks:
+      - maestro-net
+    depends_on:
+      - maestro-postgres
+    restart: unless-stopped
+    volumes:
+      - n8n-data:/home/node/.n8n
+      - ./n8n-workflows:/workflows
+
+  maestro-evolution:
+    image: atendai/evolution-api:latest
+    container_name: maestro-evolution
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_TYPE=http
+      - SERVER_PORT=8080
+      - AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY}
+      - DATABASE_ENABLED=true
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_CONNECTION_URI=postgresql://maestro:${POSTGRES_PASSWORD}@maestro-postgres:5432/maestroapp
+      - DATABASE_SAVE_DATA_INSTANCE=true
+      - DATABASE_SAVE_DATA_NEW_MESSAGE=true
+      - DATABASE_SAVE_DATA_CONTACTS=true
+      - REDIS_ENABLED=true
+      - REDIS_HOST=maestro-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      - CONFIG_SESSION_PHONE_CLIENT=MAESTRO
+    networks:
+      - maestro-net
+    depends_on:
+      - maestro-postgres
+      - maestro-redis
+    restart: unless-stopped
+
+  maestro-qdrant:
+    image: qdrant/qdrant:latest
+    container_name: maestro-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    environment:
+      - QDRANT_STORAGE=/qdrant/storage
+    networks:
+      - maestro-net
+    restart: unless-stopped
+    volumes:
+      - qdrant-data:/qdrant/storage
+
+  maestro-postgres:
+    image: postgres:16-alpine
+    container_name: maestro-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=maestro
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=maestroapp
+    networks:
+      - maestro-net
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  maestro-redis:
+    image: redis:7-alpine
+    container_name: maestro-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - maestro-net
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+  maestro-grafana:
+    image: grafana/grafana:latest
+    container_name: maestro-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    networks:
+      - maestro-net
+    restart: unless-stopped
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  maestro-portainer:
+    image: portainer/portainer-ce:latest
+    container_name: maestro-portainer
+    ports:
+      - "9000:9000"
+    environment:
+      - PORTAINER_ADMIN_PASSWORD=${PORTAINER_PASSWORD}
+    networks:
+      - maestro-net
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+
+  maestro-prometheus:
+    image: prom/prometheus:latest
+    container_name: maestro-prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - maestro-net
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  maestro-uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: maestro-uptime-kuma
+    ports:
+      - "3001:3001"
+    environment:
+      - UPTIME_KUMA_PORT=3001
+    networks:
+      - maestro-net
+    restart: unless-stopped
+    volumes:
+      - uptime-kuma-data:/app/data
+
+  dashboard-fastapi:
+    image: dashboard-fastapi:latest
+    container_name: dashboard-fastapi
+    ports:
+      - "3002:3002"
+    networks:
+      - maestro-net
+    restart: unless-stopped
+
+networks:
+  maestro-net:
+    driver: bridge
+
+volumes:
+  brain-uploads:
+  voice-cache:
+  n8n-data:
+  qdrant-data:
+  postgres-data:
+  redis-data:
+  grafana-data:
+  portainer-data:
+  prometheus-data:
+  uptime-kuma-data:

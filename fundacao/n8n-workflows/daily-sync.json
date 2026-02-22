@@ -1,0 +1,108 @@
+{
+  "name": "MAESTRO - Daily Knowledge Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 3
+            }
+          ]
+        }
+      },
+      "id": "schedule",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://maestro-brain:8000/api/agents/execute",
+        "method": "POST",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "task",
+              "value": "Atualize os preços de mercado de todos os produtos de luxo"
+            },
+            {
+              "name": "agent",
+              "value": "knowledge_sync"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "update-prices",
+      "name": "Update Prices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://maestro-qdrant:6333/collections/knowledge/snapshots",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "check-vector-db",
+      "name": "Check Vector DB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://maestro-postgres:5432/maestroapp",
+        "method": "POST",
+        "options": {}
+      },
+      "id": "backup-db",
+      "name": "Backup Database",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 300]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Update Prices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Prices": {
+      "main": [
+        [
+          {
+            "node": "Check Vector DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Vector DB": {
+      "main": [
+        [
+          {
+            "node": "Backup Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "daily-sync-001"
+}

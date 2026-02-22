@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAESTRO AI Engine v3</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🎯</span>
+                <h1>MAESTRO AI Engine</h1>
+                <span class="version">v3.0</span>
+            </div>
+            <div class="header-actions">
+                <div class="status-indicator online"></div>
+                <span class="status-text">Online</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <button class="nav-btn active" data-view="chat">
+                        <span class="nav-icon">💬</span>
+                        Chat
+                    </button>
+                    <button class="nav-btn" data-view="voice">
+                        <span class="nav-icon">🎤</span>
+                        Voz
+                    </button>
+                    <button class="nav-btn" data-view="agents">
+                        <span class="nav-icon">🤖</span>
+                        Agentes
+                    </button>
+                    <button class="nav-btn" data-view="metrics">
+                        <span class="nav-icon">📊</span>
+                        Métricas
+                    </button>
+                    <button class="nav-btn" data-view="containers">
+                        <span class="nav-icon">📦</span>
+                        Containers
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- Content Area -->
+            <section class="content">
+                <!-- Chat View -->
+                <div id="chat-view" class="view active">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message bot">
+                                <div class="message-content">
+                                    <p>Olá! Sou o <strong>MAESTRO AI Engine</strong>. Estou pronto para ajudá-lo.</p>
+                                    <p>Como posso auxiliar hoje?</p>
+                                </div>
+                                <span class="message-time">Agora</span>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <textarea id="chat-input" placeholder="Digite sua mensagem..." rows="1"></textarea>
+                            <button id="send-btn" class="send-btn">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice View -->
+                <div id="voice-view" class="view">
+                    <div class="voice-container">
+                        <h2>🎤 Voice Assistant</h2>
+                        <div class="voice-controls">
+                            <button id="voice-btn" class="voice-btn">
+                                <span class="voice-icon">🎤</span>
+                                <span class="voice-text">Pressione para falar</span>
+                            </button>
+                            <div class="voice-status" id="voice-status">Aguardando...</div>
+                        </div>
+                        <div class="voice-transcript" id="voice-transcript">
+                            <p>Sua transcrição aparecerá aqui...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agents View -->
+                <div id="agents-view" class="view">
+                    <div class="agents-container">
+                        <h2>🤖 Painel de Agentes</h2>
+                        <div class="agents-grid" id="agents-grid">
+                            <!-- Agents will be loaded dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics View -->
+                <div id="metrics-view" class="view">
+                    <div class="metrics-container">
+                        <h2>📊 Métricas</h2>
+                        <div class="metrics-cards">
+                            <div class="metric-card">
+                                <div class="metric-value" id="metric-conversations">0</div>
+                                <div class="metric-label">Conversas</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="metric-messages">0</div>
+                                <div class="metric-label">Mensagens</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="metric-agents">7</div>
+                                <div class="metric-label">Agentes Ativos</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="metric-cost">$0.00</div>
+                                <div class="metric-label">Custo Hoje</div>
+                            </div>
+                        </div>
+                        <div class="recent-activity">
+                            <h3>Atividade Recente</h3>
+                            <div id="activity-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Containers View -->
+                <div id="containers-view" class="view">
+                    <div class="containers-container">
+                        <h2>📦 Status dos Containers</h2>
+                        <div class="containers-grid" id="containers-grid">
+                            <!-- Containers will be loaded dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
