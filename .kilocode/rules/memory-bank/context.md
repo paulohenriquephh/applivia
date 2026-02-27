@@ -1,10 +1,10 @@
-# Active Context: Next.js Starter Template
+# Active Context: Applivia — Maestro AI Engine v3
 
 ## Current State
 
-**Template Status**: ✅ Ready for development
+**Project Status**: ✅ Organized and documented
 
-The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. It's ready for AI-assisted expansion to build any type of application.
+Full-stack AI automation platform with Next.js frontend and Python/Docker backend services.
 
 ## Recently Completed
 
@@ -14,14 +14,25 @@ The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. I
 - [x] ESLint configuration
 - [x] Memory bank documentation
 - [x] Recipe system for common features
+- [x] Maestro AI Engine backend (brain, crewai, dashboard, n8n, etc.)
+- [x] README.md with project overview and setup instructions
+- [x] .env.example with all required environment variables
+- [x] Next.js `/dashboard` route listing agents and services
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
 | `src/app/page.tsx` | Home page | ✅ Ready |
+| `src/app/dashboard/page.tsx` | Dashboard (agents & services) | ✅ Ready |
 | `src/app/layout.tsx` | Root layout | ✅ Ready |
 | `src/app/globals.css` | Global styles | ✅ Ready |
+| `fundacao/brain/` | FastAPI backend | ✅ Ready |
+| `fundacao/crewai/` | Multi-agent orchestration | ✅ Ready |
+| `fundacao/dashboard/` | Static HTML dashboard | ✅ Ready |
+| `fundacao/docker-compose.yml` | Full stack services | ✅ Ready |
+| `README.md` | Project documentation | ✅ Ready |
+| `.env.example` | Environment variables template | ✅ Ready |
 | `.kilocode/` | AI context & recipes | ✅ Ready |
 
 ## Current Focus
