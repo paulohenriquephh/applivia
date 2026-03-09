@@ -49,7 +49,7 @@ class Settings:
     """Application settings"""
     # LiteLLM
     LITELLM_BASE_URL = os.getenv("LITELLM_BASE_URL", "http://maestro-litellm:4000")
-    LITELLM_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+    LITELLM_API_KEY = os.getenv("LITELLM_API_KEY", os.getenv("ANTHROPIC_API_KEY", ""))
     
     # Qdrant
     QDRANT_HOST = os.getenv("QDRANT_HOST", "maestro-qdrant")
@@ -60,7 +60,7 @@ class Settings:
     POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
     POSTGRES_DB = os.getenv("POSTGRES_DB", "maestroapp")
     POSTGRES_USER = os.getenv("POSTGRES_USER", "maestro")
-    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "maestro123")
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "")
     
     # Redis
     REDIS_HOST = os.getenv("REDIS_HOST", "maestro-redis")
@@ -77,8 +77,8 @@ settings = Settings()
 # DATABASE SETUP
 # ============================================
 
-DATABASE_URL = f"postgresql://:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}"
-engine = create_engine(DATABASE_URL.replace(":@", f":{settings.POSTGRES_PASSWORD}@"))
+DATABASE_URL = f"postgresql://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}"
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -338,11 +338,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+ALLOWED_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -436,7 +438,7 @@ Sempre responda de forma profissional, clara e útil."""
         )
     except Exception as e:
         logger.error(f"Chat error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.get("/api/conversations/{conversation_id}")
@@ -508,7 +510,7 @@ async def voice_synthesize(text: str, voice_id: str = "rachel"):
             return {"audio": audio_base64}
         except Exception as e:
             logger.error(f"TTS error: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail="Internal server error")
 
 
 # ============================================
@@ -574,7 +576,7 @@ Contexto: {json.dumps(request.context) if request.context else 'Nenhum'}"""
         db.add(execution)
         db.commit()
         
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.get("/api/agents/status")
@@ -604,7 +606,14 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
         while True:
             # Receive message
             data = await websocket.receive_text()
-            message_data = json.loads(data)
+            try:
+                message_data = json.loads(data)
+            except json.JSONDecodeError:
+                await manager.send_message(
+                    json.dumps({"type": "error", "content": "Invalid JSON"}),
+                    client_id
+                )
+                continue
             
             message_type = message_data.get("type")
             
@@ -714,7 +723,7 @@ async def add_knowledge(text: str, category: str = "general"):
         return {"success": True, "id": point.id}
     except Exception as e:
         logger.error(f"Add knowledge error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 # ============================================

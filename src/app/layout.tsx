@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Next.js Template",
-  description: "A minimal Next.js starter template",
+  title: "Applivia — Maestro AI Engine",
+  description: "AI-powered automation platform for luxury import/export operations",
 };
 
 export default function RootLayout({

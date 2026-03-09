@@ -30,7 +30,7 @@ def create_orchestrator_agent() -> Agent:
     llm = ChatOpenAI(
         model="anthropic/claude-sonnet-4-20250514",
         base_url=f"{litellm_base_url}/v1",
-        api_key=literm_api_key or "dummy",
+        api_key=litellm_api_key or "dummy",
         timeout=120,
     )
 
