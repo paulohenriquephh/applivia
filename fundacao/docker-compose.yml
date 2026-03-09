@@ -315,13 +315,101 @@ services:
     volumes:
       - uptime-kuma-data:/app/data
 
-  dashboard-fastapi:
-    image: dashboard-fastapi:latest
-    container_name: dashboard-fastapi
+  # ============================================
+  # NEW SERVICES — EXECUTION KERNEL
+  # ============================================
+
+  # Dashboard API — Serves real data to Next.js dashboard
+  dashboard-api:
+    image: dashboard-api:latest
+    container_name: dashboard-api
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
     ports:
       - "3002:3002"
+    environment:
+      - POSTGRES_HOST=maestro-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=maestroapp
+      - POSTGRES_USER=maestro
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
       - maestro-net
+    depends_on:
+      - maestro-postgres
+    restart: unless-stopped
+
+  # OpenAI Spine Worker — Primary reasoning engine
+  openai-worker:
+    image: openai-worker:latest
+    container_name: openai-worker
+    build:
+      context: ../workers/openai
+      dockerfile: Dockerfile
+    ports:
+      - "8010:8010"
+    environment:
+      - LITELLM_BASE_URL=http://maestro-litellm:4000
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LANGFUSE_HOST=http://maestro-langfuse:3100
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
+      - POSTGRES_HOST=maestro-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=maestroapp
+      - POSTGRES_USER=maestro
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PRIMARY_MODEL=openai/gpt-4o
+      - FALLBACK_MODEL=anthropic/claude-sonnet-4-20250514
+    networks:
+      - maestro-net
+    depends_on:
+      - maestro-litellm
+      - maestro-postgres
+    restart: unless-stopped
+
+  # Claude Review Sidecar — Adversarial review
+  claude-review:
+    image: claude-review:latest
+    container_name: claude-review
+    build:
+      context: ../workers/claude-review
+      dockerfile: Dockerfile
+    ports:
+      - "8011:8011"
+    environment:
+      - LITELLM_BASE_URL=http://maestro-litellm:4000
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=anthropic/claude-sonnet-4-20250514
+      - POSTGRES_HOST=maestro-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=maestroapp
+      - POSTGRES_USER=maestro
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - maestro-net
+    depends_on:
+      - maestro-litellm
+      - maestro-postgres
+    restart: unless-stopped
+
+  # Langfuse — Observability & Evals
+  maestro-langfuse:
+    image: langfuse/langfuse:latest
+    container_name: maestro-langfuse
+    ports:
+      - "3100:3000"
+    environment:
+      - DATABASE_URL=postgresql://maestro:${POSTGRES_PASSWORD}@maestro-postgres:5432/maestroapp
+      - NEXTAUTH_URL=http://localhost:3100
+      - NEXTAUTH_SECRET=${LANGFUSE_NEXTAUTH_SECRET:-changeme-langfuse-secret}
+      - SALT=${LANGFUSE_SALT:-changeme-langfuse-salt}
+      - TELEMETRY_ENABLED=false
+    networks:
+      - maestro-net
+    depends_on:
+      - maestro-postgres
     restart: unless-stopped
 
 networks:

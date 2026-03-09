@@ -1,108 +1,116 @@
 # Applivia — Maestro AI Engine v3
 
-AI-powered automation platform with intelligent agents, built for marketing, sales, and business operations.
+AI-powered automation platform with intelligent agents for marketing, sales, and business operations.
 
 ## Architecture
 
 ```
 applivia/
-├── src/                    # Next.js frontend (dashboard UI)
-│   └── app/
-│       ├── page.tsx        # Home page
-│       └── dashboard/      # Agent monitoring dashboard
-├── fundacao/               # Backend infrastructure
-│   ├── brain/              # FastAPI backend (WebSocket, voice, chat)
-│   ├── crewai/             # CrewAI multi-agent orchestration
-│   ├── dashboard/          # Static HTML dashboard (legacy)
-│   ├── n8n-workflows/      # n8n automation workflows
-│   ├── scripts/            # Deploy and watchdog scripts
-│   └── docker-compose.yml  # Full stack Docker Compose
-└── package.json            # Node.js dependencies (Next.js frontend)
+├── src/                        # Next.js dashboard (10 pages)
+│   ├── app/
+│   │   ├── page.tsx            # Home
+│   │   └── dashboard/          # BI Dashboard
+│   │       ├── page.tsx        # Overview
+│   │       ├── runs/           # Execution history
+│   │       ├── costs/          # Cost tracking
+│   │       ├── approvals/      # Approval queue
+│   │       ├── incidents/      # Incident management
+│   │       ├── integrations/   # Integration health
+│   │       ├── audit/          # Audit log
+│   │       ├── errors/         # Error log
+│   │       ├── knowledge/      # Knowledge sources
+│   │       └── security/       # Security posture
+│   └── lib/                    # Shared utilities
+├── apps/api/                   # Dashboard API (FastAPI)
+├── workers/
+│   ├── openai/                 # OpenAI spine worker
+│   └── claude-review/          # Claude adversarial sidecar
+├── fundacao/                   # Docker infrastructure
+│   ├── brain/                  # FastAPI backend
+│   ├── crewai/                 # CrewAI agents
+│   ├── litellm-config/        # LiteLLM routing config
+│   ├── n8n-workflows/         # n8n automation
+│   └── docker-compose.yml     # Full stack
+├── sql/schema.sql             # Database schema (12 tables, 6 views)
+├── scripts/                   # Health check, smoke test, deploy
+├── runbooks/                  # Operational runbooks
+├── docs/                      # Documentation
+└── packages/shared/           # Shared utilities
 ```
+
+## Stack
+
+| Layer | Technology | Role |
+|-------|-----------|------|
+| Primary Spine | OpenAI GPT-4o | Reasoning, orchestration |
+| Execution Bus | n8n | Integrations, webhooks, triggers |
+| Ledger | PostgreSQL | Authoritative state (12 tables) |
+| LLM Routing | LiteLLM | Multi-provider routing, budgets |
+| Observability | Langfuse | Tracing, evals, prompt versioning |
+| Review Sidecar | Claude | Adversarial review, failure hunting |
+| Dashboard | Next.js | Real-time operational BI |
 
 ## Services
 
-| Service             | Port  | Description                        |
-|---------------------|-------|------------------------------------|
-| maestro-brain       | 8000  | FastAPI backend (AI, WebSocket)    |
-| maestro-crewai      | 8002  | Multi-agent orchestration          |
-| maestro-dashboard   | 3333  | Static web dashboard               |
-| maestro-litellm     | 4000  | LLM proxy (Anthropic, OpenRouter)  |
-| maestro-n8n         | 5678  | Automation workflows               |
-| maestro-evolution   | 8080  | WhatsApp API                       |
-| maestro-qdrant      | 6333  | Vector database                    |
-| maestro-postgres    | 5432  | PostgreSQL database                |
-| maestro-redis       | 6379  | Redis cache                        |
-| maestro-grafana     | 3000  | Monitoring dashboards              |
-| maestro-prometheus  | 9090  | Metrics collection                 |
-
-## AI Agents
-
-- **Orchestrator** — General operations coordinator
-- **Import** — China/Italy supplier management
-- **Advertising** — Meta, Google, TikTok Ads
-- **Luxury Watch** — Technical analysis for luxury watches
-- **WhatsApp SDR** — Sales via WhatsApp
-- **TikTok Growth** — Organic growth automation
-- **Knowledge Sync** — Data synchronization
+| Service | Port | Description |
+|---------|------|-------------|
+| maestro-brain | 8000 | FastAPI backend (AI, WebSocket) |
+| maestro-crewai | 8002 | Multi-agent orchestration |
+| dashboard-api | 3002 | Dashboard data API |
+| openai-worker | 8010 | OpenAI spine worker |
+| claude-review | 8011 | Claude adversarial sidecar |
+| maestro-litellm | 4000 | LLM proxy + routing |
+| maestro-n8n | 5678 | Automation workflows |
+| maestro-langfuse | 3100 | Observability + evals |
+| maestro-postgres | 5432 | PostgreSQL database |
+| maestro-redis | 6379 | Redis cache |
+| maestro-qdrant | 6333 | Vector database |
+| maestro-evolution | 8080 | WhatsApp API |
+| maestro-grafana | 3000 | Monitoring |
+| maestro-prometheus | 9090 | Metrics |
 
 ## Getting Started
 
-### Prerequisites
-
-- Docker & Docker Compose
-- Node.js 18+ (for the Next.js frontend)
-- Bun (recommended package manager)
-
-### 1. Configure environment variables
-
+### 1. Configure environment
 ```bash
-cp .env.example .env
-# Edit .env with your API keys and credentials
+cp ENV.example .env
+# Fill in API keys and passwords
 ```
 
-### 2. Start backend services
-
+### 2. Start infrastructure
 ```bash
 cd fundacao
 docker compose up -d
 ```
 
-### 3. Start the Next.js frontend
-
+### 3. Apply database schema
 ```bash
-bun install
-bun dev
+bash scripts/apply-schema.sh
+bash scripts/seed-integrations.sh
 ```
 
-The frontend will be available at [http://localhost:3001](http://localhost:3001).
-
-> **Note:** Grafana also defaults to port 3000 in the Docker stack. Run the Next.js dev server on a different port to avoid conflicts: `npm run dev -- --port 3001` (or configure `PORT=3001` in your environment).
-
-## Development
-
-### Frontend (Next.js)
-
+### 4. Start dashboard
 ```bash
-bun dev          # Start development server
-bun run build    # Build for production
-bun run lint     # Run ESLint
-bun run typecheck # Run TypeScript type checking
+npm install
+npm run dev -- --port 3001
 ```
 
-### Backend (Python)
-
-Each service has its own `requirements.txt`. Install dependencies:
-
+### 5. Verify
 ```bash
-pip install -r fundacao/brain/requirements.txt
-pip install -r fundacao/crewai/requirements.txt
+bash scripts/health-check.sh
+bash scripts/smoke-test.sh
 ```
 
-## Deployment
+## Key Files
 
-Use the provided deploy script:
-
-```bash
-bash fundacao/scripts/deploy.sh
-```
+| File | Purpose |
+|------|---------|
+| `CLAUDE.md` | AI assistant context |
+| `STATUS.md` | Current system status |
+| `INVENTORY.md` | Environment inventory |
+| `STACK_SPEC.md` | Architecture decisions |
+| `ASSUMPTIONS.md` | Assumptions and unknowns |
+| `DECISION_LOG.md` | Decision history |
+| `TEST_PLAN.md` | Acceptance criteria |
+| `ENV.example` | Environment template |
+| `sql/schema.sql` | Database schema |
