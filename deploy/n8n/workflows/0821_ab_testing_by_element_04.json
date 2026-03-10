@@ -1,0 +1,136 @@
+{
+  "name": "0821_ab_testing_by_element_04",
+  "nodes": [
+    {
+      "name": "Webhook_by_element",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "ab_testing/by_element/0821",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "id": "93924225-34da-bb55-1e63-3d5f92f99e22"
+    },
+    {
+      "name": "Set_by_element_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "ab_testing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_element",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "821",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "29748b7b-7511-62a9-1681-418c32f48114"
+    },
+    {
+      "name": "AB_Eval_by_element",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// A/B test evaluation for by_element\nconst variants = items.map(item => {\n  const score = Math.random() * 100;\n  return {\n    json: { ...item.json, variant: 'by_element', score, significant: score > 50 }\n  };\n});\nreturn variants;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "72962e9c-0b21-581c-debb-a6430c9465a0"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[ab_testing] Report - by_element",
+        "html": "<h2>ab_testing Report</h2><p>Variation: by_element</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "6c943be4-f9b5-b9dc-191b-58f5e8b9fa80"
+    }
+  ],
+  "connections": {
+    "Webhook_by_element": {
+      "main": [
+        [
+          {
+            "node": "Set_by_element_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_element_Context": {
+      "main": [
+        [
+          {
+            "node": "AB_Eval_by_element",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AB_Eval_by_element": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "testing"
+    },
+    {
+      "name": "ab"
+    }
+  ]
+}

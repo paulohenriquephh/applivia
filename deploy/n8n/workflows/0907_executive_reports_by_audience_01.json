@@ -1,0 +1,147 @@
+{
+  "name": "0907_executive_reports_by_audience_01",
+  "nodes": [
+    {
+      "name": "Webhook_by_audience",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "executive_reports/by_audience/0907",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "02461bf8-ebac-76c5-8629-90d327e45d33"
+    },
+    {
+      "name": "Set_by_audience_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "executive_reports",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_audience",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "907",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "72ef27ed-38d8-154d-bd9e-2f0a9afdbdac"
+    },
+    {
+      "name": "CrewAI_executive_reports",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "market_research"
+            },
+            {
+              "name": "task",
+              "value": "by_audience"
+            }
+          ]
+        }
+      },
+      "id": "3fd7fcba-5013-f07e-31d8-dbc24dad3cef"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for executive_reports/by_audience\nconsole.log('Workflow 0907 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "ca0a9ab8-a8cf-b29c-f6a6-0901593f2b03"
+    }
+  ],
+  "connections": {
+    "Webhook_by_audience": {
+      "main": [
+        [
+          {
+            "node": "Set_by_audience_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_audience_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_executive_reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_executive_reports": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "executive"
+    },
+    {
+      "name": "reports"
+    }
+  ]
+}

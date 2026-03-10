@@ -1,0 +1,155 @@
+{
+  "name": "0785_feedback_nps_by_channel_06",
+  "nodes": [
+    {
+      "name": "Schedule_by_channel",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */15 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "65daad45-c533-87c6-38ac-1a3bef45e58d"
+    },
+    {
+      "name": "Set_by_channel_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "feedback_nps",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_channel",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "785",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "60ea050c-91e6-aa73-e039-61dafb79cb6e"
+    },
+    {
+      "name": "CrewAI_Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "support"
+            },
+            {
+              "name": "task",
+              "value": "by_channel"
+            }
+          ]
+        }
+      },
+      "id": "580c9eae-3f34-e3d1-1256-e8156b2a2cfc"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[feedback_nps] Report - by_channel",
+        "html": "<h2>feedback_nps Report</h2><p>Variation: by_channel</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "1fc5d25e-9485-eda6-a76b-9dce03938a9e"
+    }
+  ],
+  "connections": {
+    "Schedule_by_channel": {
+      "main": [
+        [
+          {
+            "node": "Set_by_channel_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_channel_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Client": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "feedback"
+    },
+    {
+      "name": "nps"
+    }
+  ]
+}

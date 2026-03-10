@@ -1,0 +1,49 @@
+{
+  "uid": "singularity-coceo-decisions",
+  "title": "09 - CO-CEO Decisions",
+  "tags": ["singularity", "coceo"],
+  "timezone": "utc",
+  "refresh": "5m",
+  "time": {"from": "now-30d", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "title": "Decisions Made (30d)", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "targets": [{"rawSql": "SELECT COUNT(*) as value FROM coceo_decisions WHERE created_at > NOW() - INTERVAL '30 days'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 2, "title": "Avg Confidence", "type": "gauge", "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "targets": [{"rawSql": "SELECT AVG(confidence) as value FROM coceo_decisions WHERE created_at > NOW() - INTERVAL '30 days'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"max": 100, "thresholds": {"steps": [{"value": 0, "color": "red"}, {"value": 60, "color": "yellow"}, {"value": 80, "color": "green"}]}}}
+    },
+    {
+      "id": 3, "title": "Total CO-CEO Cost (30d)", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "targets": [{"rawSql": "SELECT SUM(cost_usd) as value FROM coceo_decisions WHERE created_at > NOW() - INTERVAL '30 days'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 4, "title": "Models Used", "type": "piechart", "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "targets": [{"rawSql": "SELECT model_used as metric, COUNT(*) as value FROM coceo_decisions WHERE created_at > NOW() - INTERVAL '30 days' GROUP BY model_used", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 5, "title": "Decisions Over Time", "type": "timeseries", "gridPos": {"h": 8, "w": 24, "x": 0, "y": 4},
+      "targets": [{"rawSql": "SELECT date_trunc('day', created_at) as time, COUNT(*) as decisions, AVG(confidence) as avg_confidence, SUM(cost_usd) as total_cost FROM coceo_decisions WHERE $__timeFilter(created_at) GROUP BY 1 ORDER BY 1", "refId": "A", "format": "time_series"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 6, "title": "Decision Outcomes", "type": "barchart", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "targets": [{"rawSql": "SELECT outcome, COUNT(*) as value FROM coceo_decisions WHERE created_at > NOW() - INTERVAL '30 days' AND outcome IS NOT NULL GROUP BY outcome", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 7, "title": "Cost per Decision (Trend)", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "targets": [{"rawSql": "SELECT date_trunc('day', created_at) as time, AVG(cost_usd) as avg_cost FROM coceo_decisions WHERE $__timeFilter(created_at) GROUP BY 1 ORDER BY 1", "refId": "A", "format": "time_series"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    }
+  ],
+  "schemaVersion": 39
+}

@@ -1,0 +1,147 @@
+{
+  "name": "0687_client_management_by_health_07",
+  "nodes": [
+    {
+      "name": "Webhook_by_health",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "client_management/by_health/0687",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "5e621056-8c28-98a1-f62b-66155f9d6c1c"
+    },
+    {
+      "name": "Set_by_health_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "client_management",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_health",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "687",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "b8323f11-9fbd-ac44-5e21-68d86bf1b02f"
+    },
+    {
+      "name": "CrewAI_Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "support"
+            },
+            {
+              "name": "task",
+              "value": "by_health"
+            }
+          ]
+        }
+      },
+      "id": "8f2d9c81-288d-7996-2a4f-955a464efcd6"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for client_management/by_health\nconsole.log('Workflow 0687 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "d3d08e44-ebbd-dc96-71b0-0c971c6d6406"
+    }
+  ],
+  "connections": {
+    "Webhook_by_health": {
+      "main": [
+        [
+          {
+            "node": "Set_by_health_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_health_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Client": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "client"
+    },
+    {
+      "name": "management"
+    }
+  ]
+}

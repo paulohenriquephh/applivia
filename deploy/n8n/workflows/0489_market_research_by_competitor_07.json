@@ -1,0 +1,155 @@
+{
+  "name": "0489_market_research_by_competitor_07",
+  "nodes": [
+    {
+      "name": "Cron_by_competitor",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 */4 * * *"
+            }
+          ]
+        }
+      },
+      "id": "5bcc4986-f84d-7dca-6b8c-ea2aadf0ba0e"
+    },
+    {
+      "name": "Set_by_competitor_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "market_research",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_competitor",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "489",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "7ac4d93f-ab05-54cf-009e-7edd7fa658ec"
+    },
+    {
+      "name": "CrewAI_Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "market_research"
+            },
+            {
+              "name": "task",
+              "value": "by_competitor"
+            }
+          ]
+        }
+      },
+      "id": "dddfc792-f570-20e5-614f-6873787b1b34"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[market_research] Report - by_competitor",
+        "html": "<h2>market_research Report</h2><p>Variation: by_competitor</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "eedb6c81-3f2b-25c4-10bb-460b29c6f875"
+    }
+  ],
+  "connections": {
+    "Cron_by_competitor": {
+      "main": [
+        [
+          {
+            "node": "Set_by_competitor_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_competitor_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Research": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "market"
+    },
+    {
+      "name": "research"
+    }
+  ]
+}

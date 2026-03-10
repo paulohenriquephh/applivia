@@ -1,0 +1,195 @@
+{
+  "name": "0725_support_helpdesk_by_sla_04",
+  "nodes": [
+    {
+      "name": "Schedule_by_sla",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 */8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "0b94dc86-04c6-0eb8-6ed8-3d0e65159de2"
+    },
+    {
+      "name": "Set_by_sla_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "support_helpdesk",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_sla",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "725",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "9c048e03-59e5-d05b-96da-2721a0dcf634"
+    },
+    {
+      "name": "Check_Priority",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json[\"priority\"]}}",
+              "rightValue": "high",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "9a0501b5-5c08-33eb-8468-ac2ad7a49d78"
+    },
+    {
+      "name": "CrewAI_support_helpdesk",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "support"
+            },
+            {
+              "name": "task",
+              "value": "by_sla"
+            }
+          ]
+        }
+      },
+      "id": "93632eb5-f0b0-518f-cdb1-cdf3b491f4eb"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[support_helpdesk] Report - by_sla",
+        "html": "<h2>support_helpdesk Report</h2><p>Variation: by_sla</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "8ce46eae-79d0-8053-3482-bb59ac79628e"
+    }
+  ],
+  "connections": {
+    "Schedule_by_sla": {
+      "main": [
+        [
+          {
+            "node": "Set_by_sla_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_sla_Context": {
+      "main": [
+        [
+          {
+            "node": "Check_Priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check_Priority": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_support_helpdesk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_support_helpdesk": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "support"
+    },
+    {
+      "name": "helpdesk"
+    }
+  ]
+}

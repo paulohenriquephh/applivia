@@ -1,0 +1,132 @@
+{
+  "name": "0813_ab_testing_by_metric_02",
+  "nodes": [
+    {
+      "name": "Manual_by_metric",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "22203aa3-bc32-ba5d-cea9-11db9a30fbd1"
+    },
+    {
+      "name": "Set_by_metric_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "ab_testing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_metric",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "813",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "70215634-4089-9ce5-9f67-9100a31dc46f"
+    },
+    {
+      "name": "AB_Eval_by_metric",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// A/B test evaluation for by_metric\nconst variants = items.map(item => {\n  const score = Math.random() * 100;\n  return {\n    json: { ...item.json, variant: 'by_metric', score, significant: score > 50 }\n  };\n});\nreturn variants;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "ca069ff9-20e4-f2ec-b37c-76f073251f9e"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[ab_testing] Report - by_metric",
+        "html": "<h2>ab_testing Report</h2><p>Variation: by_metric</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "6abb2509-93ce-67d8-c8ff-a792a4a1e515"
+    }
+  ],
+  "connections": {
+    "Manual_by_metric": {
+      "main": [
+        [
+          {
+            "node": "Set_by_metric_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_metric_Context": {
+      "main": [
+        [
+          {
+            "node": "AB_Eval_by_metric",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AB_Eval_by_metric": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "testing"
+    },
+    {
+      "name": "ab"
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "name": "0184_lead_nurture_by_channel_06",
+  "nodes": [
+    {
+      "name": "Cron_by_channel",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "cefde924-3261-ec3f-035b-2c760470a2fe"
+    },
+    {
+      "name": "Set_by_channel_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "lead_nurture",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_channel",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "184",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "9f3bc9d6-d48f-1d7c-70f2-e83a7ae82322"
+    },
+    {
+      "name": "CrewAI_Outreach",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "outreach"
+            },
+            {
+              "name": "task",
+              "value": "by_channel"
+            }
+          ]
+        }
+      },
+      "id": "75a06788-94a4-04fb-950f-72528898cd4f"
+    },
+    {
+      "name": "Process_by_channel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Process lead_nurture results for variation: by_channel\nconst results = items.map(item => {\n  return {\n    json: {\n      ...item.json,\n      processed: true,\n      category: 'lead_nurture',\n      variation: 'by_channel',\n      timestamp: new Date().toISOString()\n    }\n  };\n});\nreturn results;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "62e4beb5-2078-55e2-ee35-946f86249aec"
+    },
+    {
+      "name": "Notify_Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "[LEAD_NURTURE] Workflow 0184 (by_channel) completed.\nResult: {{ $json.result }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      },
+      "id": "ae4f048e-52eb-b919-1c57-eb190c450c23"
+    }
+  ],
+  "connections": {
+    "Cron_by_channel": {
+      "main": [
+        [
+          {
+            "node": "Set_by_channel_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_channel_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Outreach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Outreach": {
+      "main": [
+        [
+          {
+            "node": "Process_by_channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process_by_channel": {
+      "main": [
+        [
+          {
+            "node": "Notify_Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "leads"
+    },
+    {
+      "name": "nurture"
+    }
+  ]
+}

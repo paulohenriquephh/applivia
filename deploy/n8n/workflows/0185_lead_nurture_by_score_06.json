@@ -1,0 +1,180 @@
+{
+  "name": "0185_lead_nurture_by_score_06",
+  "nodes": [
+    {
+      "name": "Schedule_by_score",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */15 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "035c5188-9c7e-363d-4056-62dea47f8aef"
+    },
+    {
+      "name": "Set_by_score_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "lead_nurture",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_score",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "185",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "9eb99aae-591f-ae37-0551-5a53d687d34e"
+    },
+    {
+      "name": "CrewAI_Outreach",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "outreach"
+            },
+            {
+              "name": "task",
+              "value": "by_score"
+            }
+          ]
+        }
+      },
+      "id": "b64d775b-b6f0-379c-f61b-2be53807a80a"
+    },
+    {
+      "name": "Process_by_score",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Process lead_nurture results for variation: by_score\nconst results = items.map(item => {\n  return {\n    json: {\n      ...item.json,\n      processed: true,\n      category: 'lead_nurture',\n      variation: 'by_score',\n      timestamp: new Date().toISOString()\n    }\n  };\n});\nreturn results;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "fb64b45b-6a37-4c03-f46e-aec86ed80b38"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[lead_nurture] Report - by_score",
+        "html": "<h2>lead_nurture Report</h2><p>Variation: by_score</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "54b921a5-673e-8624-b5cc-07b97487a9ec"
+    }
+  ],
+  "connections": {
+    "Schedule_by_score": {
+      "main": [
+        [
+          {
+            "node": "Set_by_score_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_score_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Outreach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Outreach": {
+      "main": [
+        [
+          {
+            "node": "Process_by_score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process_by_score": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "leads"
+    },
+    {
+      "name": "nurture"
+    }
+  ]
+}

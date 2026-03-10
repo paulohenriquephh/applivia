@@ -1,0 +1,143 @@
+{
+  "name": "0643_invoicing_by_method_08",
+  "nodes": [
+    {
+      "name": "Manual_by_method",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "3a60b230-579c-0b08-9d80-a313e513a288"
+    },
+    {
+      "name": "Set_by_method_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "invoicing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_method",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "643",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "fb1e1a21-126d-4edf-ae66-c82f53569763"
+    },
+    {
+      "name": "CrewAI_Finance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "finance"
+            },
+            {
+              "name": "task",
+              "value": "by_method"
+            }
+          ]
+        }
+      },
+      "id": "c8554970-f997-853b-3b5d-3afe9f39bf01"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for invoicing/by_method\nconsole.log('Workflow 0643 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "28149b8d-b52e-ee21-8bdc-d147218b5f59"
+    }
+  ],
+  "connections": {
+    "Manual_by_method": {
+      "main": [
+        [
+          {
+            "node": "Set_by_method_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_method_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Finance": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "invoicing"
+    },
+    {
+      "name": "billing"
+    }
+  ]
+}

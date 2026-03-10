@@ -1,0 +1,152 @@
+{
+  "name": "0699_client_management_by_segment_09",
+  "nodes": [
+    {
+      "name": "Cron_by_segment",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 0 * * *"
+            }
+          ]
+        }
+      },
+      "id": "9e32c012-f859-546a-0707-3fae2c54b8da"
+    },
+    {
+      "name": "Set_by_segment_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "client_management",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_segment",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "699",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "c4e125b1-d7ae-6830-f4d2-6bea7bf8475b"
+    },
+    {
+      "name": "CrewAI_Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "support"
+            },
+            {
+              "name": "task",
+              "value": "by_segment"
+            }
+          ]
+        }
+      },
+      "id": "b9204c31-c009-6bfb-cac8-83362bae9113"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for client_management/by_segment\nconsole.log('Workflow 0699 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "a9d3fb4a-b8b2-cd36-e096-3d1dcf162557"
+    }
+  ],
+  "connections": {
+    "Cron_by_segment": {
+      "main": [
+        [
+          {
+            "node": "Set_by_segment_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_segment_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Client": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "client"
+    },
+    {
+      "name": "management"
+    }
+  ]
+}

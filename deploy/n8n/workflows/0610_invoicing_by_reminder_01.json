@@ -1,0 +1,152 @@
+{
+  "name": "0610_invoicing_by_reminder_01",
+  "nodes": [
+    {
+      "name": "Schedule_by_reminder",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */30 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "f547c2f8-4015-7983-ca7f-887e6284f4f6"
+    },
+    {
+      "name": "Set_by_reminder_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "invoicing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_reminder",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "610",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "5aab1558-2490-a4ba-2340-e82dd540390c"
+    },
+    {
+      "name": "CrewAI_Finance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "finance"
+            },
+            {
+              "name": "task",
+              "value": "by_reminder"
+            }
+          ]
+        }
+      },
+      "id": "df7e10c2-4533-5c1d-f536-c9ad2d5d5d80"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'invoicing', variation: 'by_reminder' }) }}"
+      },
+      "id": "46fecbb7-f73d-9c30-c0af-f8efe292b866"
+    }
+  ],
+  "connections": {
+    "Schedule_by_reminder": {
+      "main": [
+        [
+          {
+            "node": "Set_by_reminder_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_reminder_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Finance": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "invoicing"
+    },
+    {
+      "name": "billing"
+    }
+  ]
+}

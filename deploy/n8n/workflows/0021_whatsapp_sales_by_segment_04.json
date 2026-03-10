@@ -1,0 +1,190 @@
+{
+  "name": "0021_whatsapp_sales_by_segment_04",
+  "nodes": [
+    {
+      "name": "Webhook_by_segment",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "whatsapp_sales/by_segment/0021",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "id": "b570374c-488a-399d-beda-2245d34741e7"
+    },
+    {
+      "name": "Set_by_segment_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "whatsapp_sales",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_segment",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "21",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "eff8aa02-3527-a38e-3a95-dbb9e12e2131"
+    },
+    {
+      "name": "Check_Priority",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json[\"priority\"]}}",
+              "rightValue": "high",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "a29c3d0e-12ce-209f-4a3a-fb3bf3f7030e"
+    },
+    {
+      "name": "CrewAI_whatsapp_sales",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "sales"
+            },
+            {
+              "name": "task",
+              "value": "by_segment"
+            }
+          ]
+        }
+      },
+      "id": "78111d52-e5e2-d9e8-a366-9b2510dc2ad9"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[whatsapp_sales] Report - by_segment",
+        "html": "<h2>whatsapp_sales Report</h2><p>Variation: by_segment</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "5feb808e-ed3c-3b25-22ce-d08ca63f39f3"
+    }
+  ],
+  "connections": {
+    "Webhook_by_segment": {
+      "main": [
+        [
+          {
+            "node": "Set_by_segment_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_segment_Context": {
+      "main": [
+        [
+          {
+            "node": "Check_Priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check_Priority": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_whatsapp_sales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_whatsapp_sales": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "whatsapp"
+    },
+    {
+      "name": "sales"
+    }
+  ]
+}

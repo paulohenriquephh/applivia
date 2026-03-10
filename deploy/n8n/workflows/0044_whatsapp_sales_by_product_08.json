@@ -1,0 +1,199 @@
+{
+  "name": "0044_whatsapp_sales_by_product_08",
+  "nodes": [
+    {
+      "name": "Cron_by_product",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 0 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "18de125e-ff95-bcb1-a0a9-cae877246a9a"
+    },
+    {
+      "name": "Set_by_product_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "whatsapp_sales",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_product",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "44",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "c38a7a91-4220-cdef-e0f9-b6ef2fb724ac"
+    },
+    {
+      "name": "Check_Priority",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json[\"priority\"]}}",
+              "rightValue": "high",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "a2ae307c-0cc9-8ec2-18b9-69748b946d62"
+    },
+    {
+      "name": "CrewAI_whatsapp_sales",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "sales"
+            },
+            {
+              "name": "task",
+              "value": "by_product"
+            }
+          ]
+        }
+      },
+      "id": "d28fcefd-89e1-aa15-656a-6a5bdba6c7f3"
+    },
+    {
+      "name": "Notify_Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "[WHATSAPP_SALES] Workflow 0044 (by_product) completed.\nResult: {{ $json.result }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      },
+      "id": "b879e2d3-1678-068e-a728-eec9ec81ef5f"
+    }
+  ],
+  "connections": {
+    "Cron_by_product": {
+      "main": [
+        [
+          {
+            "node": "Set_by_product_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_product_Context": {
+      "main": [
+        [
+          {
+            "node": "Check_Priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check_Priority": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_whatsapp_sales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_whatsapp_sales": {
+      "main": [
+        [
+          {
+            "node": "Notify_Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "whatsapp"
+    },
+    {
+      "name": "sales"
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "name": "0662_client_management_by_health_02",
+  "nodes": [
+    {
+      "name": "Webhook_by_health",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "client_management/by_health/0662",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "cc7ec18b-65c1-ca83-ba41-d9613cc8d159"
+    },
+    {
+      "name": "Set_by_health_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "client_management",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_health",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "662",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "68f5dfbb-20ab-d367-1412-27f2b93ec750"
+    },
+    {
+      "name": "CrewAI_Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "support"
+            },
+            {
+              "name": "task",
+              "value": "by_health"
+            }
+          ]
+        }
+      },
+      "id": "bdff7793-e778-3cdf-6562-0507faf8a9bf"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'client_management', variation: 'by_health' }) }}"
+      },
+      "id": "3af4fc50-3469-cec8-68cb-ac7db986e393"
+    }
+  ],
+  "connections": {
+    "Webhook_by_health": {
+      "main": [
+        [
+          {
+            "node": "Set_by_health_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_health_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Client": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "client"
+    },
+    {
+      "name": "management"
+    }
+  ]
+}

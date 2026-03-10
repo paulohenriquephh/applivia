@@ -1,0 +1,159 @@
+{
+  "name": "0644_invoicing_by_frequency_08",
+  "nodes": [
+    {
+      "name": "Cron_by_frequency",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 0 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "a4d2c06e-f353-c29c-92de-d33e3b6c5747"
+    },
+    {
+      "name": "Set_by_frequency_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "invoicing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_frequency",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "644",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "9f710bb6-df07-8467-9f04-00d304b0031f"
+    },
+    {
+      "name": "CrewAI_Finance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "finance"
+            },
+            {
+              "name": "task",
+              "value": "by_frequency"
+            }
+          ]
+        }
+      },
+      "id": "75b1a66a-27f3-aac0-1273-e7ec78dde873"
+    },
+    {
+      "name": "Notify_Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "[INVOICING] Workflow 0644 (by_frequency) completed.\nResult: {{ $json.result }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      },
+      "id": "afaadcea-f3a4-3975-fc43-82e0e498b3a1"
+    }
+  ],
+  "connections": {
+    "Cron_by_frequency": {
+      "main": [
+        [
+          {
+            "node": "Set_by_frequency_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_frequency_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Finance": {
+      "main": [
+        [
+          {
+            "node": "Notify_Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "invoicing"
+    },
+    {
+      "name": "billing"
+    }
+  ]
+}

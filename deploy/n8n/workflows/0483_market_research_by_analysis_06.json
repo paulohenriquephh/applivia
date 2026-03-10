@@ -1,0 +1,143 @@
+{
+  "name": "0483_market_research_by_analysis_06",
+  "nodes": [
+    {
+      "name": "Manual_by_analysis",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "bcaae412-daa7-e13e-2c29-e8fe40a11ad0"
+    },
+    {
+      "name": "Set_by_analysis_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "market_research",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_analysis",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "483",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "915e0980-e2a1-7693-480a-3d624c7878a7"
+    },
+    {
+      "name": "CrewAI_Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "market_research"
+            },
+            {
+              "name": "task",
+              "value": "by_analysis"
+            }
+          ]
+        }
+      },
+      "id": "bbbf0316-dd1c-883d-b3da-8a433462847f"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for market_research/by_analysis\nconsole.log('Workflow 0483 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "d910d07a-2acd-5cec-ed0c-514408eddf3e"
+    }
+  ],
+  "connections": {
+    "Manual_by_analysis": {
+      "main": [
+        [
+          {
+            "node": "Set_by_analysis_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_analysis_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Research": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "market"
+    },
+    {
+      "name": "research"
+    }
+  ]
+}

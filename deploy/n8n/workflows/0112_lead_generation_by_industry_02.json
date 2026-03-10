@@ -1,0 +1,179 @@
+{
+  "name": "0112_lead_generation_by_industry_02",
+  "nodes": [
+    {
+      "name": "Webhook_by_industry",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "lead_generation/by_industry/0112",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "fc8e48f0-d388-80e0-003e-9a9641d9814e"
+    },
+    {
+      "name": "Set_by_industry_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "lead_generation",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_industry",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "112",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "e31cba1a-f1c2-ca09-65be-5c2a85369678"
+    },
+    {
+      "name": "CrewAI_Outreach",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "outreach"
+            },
+            {
+              "name": "task",
+              "value": "by_industry"
+            }
+          ]
+        }
+      },
+      "id": "98b79e69-3f31-8393-e019-00af380a5bb9"
+    },
+    {
+      "name": "Process_by_industry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Process lead_generation results for variation: by_industry\nconst results = items.map(item => {\n  return {\n    json: {\n      ...item.json,\n      processed: true,\n      category: 'lead_generation',\n      variation: 'by_industry',\n      timestamp: new Date().toISOString()\n    }\n  };\n});\nreturn results;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "9aaf926b-9334-f45f-37c6-e70f3aff7386"
+    },
+    {
+      "name": "Notify_Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "[LEAD_GENERATION] Workflow 0112 (by_industry) completed.\nResult: {{ $json.result }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      },
+      "id": "a8ac8b69-c997-e7c7-bd1e-2c644c0b6c73"
+    }
+  ],
+  "connections": {
+    "Webhook_by_industry": {
+      "main": [
+        [
+          {
+            "node": "Set_by_industry_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_industry_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Outreach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Outreach": {
+      "main": [
+        [
+          {
+            "node": "Process_by_industry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process_by_industry": {
+      "main": [
+        [
+          {
+            "node": "Notify_Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "leads"
+    },
+    {
+      "name": "generation"
+    }
+  ]
+}

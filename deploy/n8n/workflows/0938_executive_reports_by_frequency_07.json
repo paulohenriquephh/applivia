@@ -1,0 +1,143 @@
+{
+  "name": "0938_executive_reports_by_frequency_07",
+  "nodes": [
+    {
+      "name": "Manual_by_frequency",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "6e4f5f4c-12e7-84c4-b8c6-1e4e571eb683"
+    },
+    {
+      "name": "Set_by_frequency_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "executive_reports",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_frequency",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "938",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "cb148be7-544b-5b6e-9943-7803e11845b9"
+    },
+    {
+      "name": "CrewAI_executive_reports",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "market_research"
+            },
+            {
+              "name": "task",
+              "value": "by_frequency"
+            }
+          ]
+        }
+      },
+      "id": "9e0ea91e-f9f6-09ec-d602-cfaa86951323"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'executive_reports', variation: 'by_frequency' }) }}"
+      },
+      "id": "2675fa87-f961-8ac1-4208-ea7ecf287997"
+    }
+  ],
+  "connections": {
+    "Manual_by_frequency": {
+      "main": [
+        [
+          {
+            "node": "Set_by_frequency_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_frequency_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_executive_reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_executive_reports": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "executive"
+    },
+    {
+      "name": "reports"
+    }
+  ]
+}

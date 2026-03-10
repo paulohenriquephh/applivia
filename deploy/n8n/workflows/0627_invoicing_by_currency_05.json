@@ -1,0 +1,147 @@
+{
+  "name": "0627_invoicing_by_currency_05",
+  "nodes": [
+    {
+      "name": "Webhook_by_currency",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "invoicing/by_currency/0627",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "b71c34c0-2527-d892-4fed-233cd5ef14ef"
+    },
+    {
+      "name": "Set_by_currency_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "invoicing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_currency",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "627",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "a84a8c8f-a43e-76f9-b6a9-80a49b94d1e6"
+    },
+    {
+      "name": "CrewAI_Finance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "finance"
+            },
+            {
+              "name": "task",
+              "value": "by_currency"
+            }
+          ]
+        }
+      },
+      "id": "ef598760-a350-ec4e-d363-c65b856d84d8"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for invoicing/by_currency\nconsole.log('Workflow 0627 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "92317d1d-7902-2ee3-5891-674643f7a463"
+    }
+  ],
+  "connections": {
+    "Webhook_by_currency": {
+      "main": [
+        [
+          {
+            "node": "Set_by_currency_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_currency_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Finance": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "invoicing"
+    },
+    {
+      "name": "billing"
+    }
+  ]
+}

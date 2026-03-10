@@ -1,0 +1,182 @@
+{
+  "name": "0865_monitoring_health_by_schedule_02",
+  "nodes": [
+    {
+      "name": "Schedule_by_schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */15 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "b56635ae-d88a-969c-ceb7-43c739214c52"
+    },
+    {
+      "name": "Set_by_schedule_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "monitoring_health",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_schedule",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "865",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "f0a1c8b9-1bfc-4137-fc71-ae677b8240ff"
+    },
+    {
+      "name": "Health_Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/health",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "092fa0af-aeba-3de5-5b37-22d49400d353"
+    },
+    {
+      "name": "Is_Healthy",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json[\"status\"]}}",
+              "rightValue": "healthy",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "a54e5f2e-1635-0795-1459-41c2af6774e4"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[monitoring_health] Report - by_schedule",
+        "html": "<h2>monitoring_health Report</h2><p>Variation: by_schedule</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "a8b54f85-540b-70ff-cba7-0cb7a4b76829"
+    }
+  ],
+  "connections": {
+    "Schedule_by_schedule": {
+      "main": [
+        [
+          {
+            "node": "Set_by_schedule_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_schedule_Context": {
+      "main": [
+        [
+          {
+            "node": "Health_Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Health_Check": {
+      "main": [
+        [
+          {
+            "node": "Is_Healthy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is_Healthy": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "monitoring"
+    },
+    {
+      "name": "health"
+    }
+  ]
+}

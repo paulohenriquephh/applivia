@@ -1,0 +1,152 @@
+{
+  "name": "0919_executive_reports_by_metric_03",
+  "nodes": [
+    {
+      "name": "Cron_by_metric",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */30 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "bb039979-829a-91b4-418e-f0a653f2803a"
+    },
+    {
+      "name": "Set_by_metric_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "executive_reports",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_metric",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "919",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "dbf30b8f-6dc1-c05e-499d-05ca5ba9aeb0"
+    },
+    {
+      "name": "CrewAI_executive_reports",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "market_research"
+            },
+            {
+              "name": "task",
+              "value": "by_metric"
+            }
+          ]
+        }
+      },
+      "id": "79705d00-3c37-999f-13f0-b489c0862608"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for executive_reports/by_metric\nconsole.log('Workflow 0919 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "978479ac-7705-10ef-ee28-6400ac430cea"
+    }
+  ],
+  "connections": {
+    "Cron_by_metric": {
+      "main": [
+        [
+          {
+            "node": "Set_by_metric_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_metric_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_executive_reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_executive_reports": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "executive"
+    },
+    {
+      "name": "reports"
+    }
+  ]
+}

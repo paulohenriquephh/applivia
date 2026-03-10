@@ -1,0 +1,147 @@
+{
+  "name": "0507_revenue_finance_by_period_01",
+  "nodes": [
+    {
+      "name": "Webhook_by_period",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "revenue_finance/by_period/0507",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "9cc3ebb5-f2fe-96e2-6911-a2e8eda5ca74"
+    },
+    {
+      "name": "Set_by_period_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "revenue_finance",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_period",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "507",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "c996a891-728c-bdbd-a395-ae40d9eb1d19"
+    },
+    {
+      "name": "CrewAI_Finance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "finance"
+            },
+            {
+              "name": "task",
+              "value": "by_period"
+            }
+          ]
+        }
+      },
+      "id": "4244f219-b139-87c8-b0b2-62fe1907c525"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for revenue_finance/by_period\nconsole.log('Workflow 0507 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "f2dcea2b-0fac-42a3-e139-54221a8337de"
+    }
+  ],
+  "connections": {
+    "Webhook_by_period": {
+      "main": [
+        [
+          {
+            "node": "Set_by_period_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_period_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Finance": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "revenue"
+    },
+    {
+      "name": "finance"
+    }
+  ]
+}

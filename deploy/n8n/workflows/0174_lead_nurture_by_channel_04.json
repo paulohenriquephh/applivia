@@ -1,0 +1,177 @@
+{
+  "name": "0174_lead_nurture_by_channel_04",
+  "nodes": [
+    {
+      "name": "Cron_by_channel",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */15 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "34113d8a-48f0-e572-2b65-637d5b104ae1"
+    },
+    {
+      "name": "Set_by_channel_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "lead_nurture",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_channel",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "174",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "f94afc23-ef39-1a66-7a25-7640d98a8bd7"
+    },
+    {
+      "name": "CrewAI_Outreach",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "outreach"
+            },
+            {
+              "name": "task",
+              "value": "by_channel"
+            }
+          ]
+        }
+      },
+      "id": "781806c3-b1ef-3c0b-aee4-d4be60794d2d"
+    },
+    {
+      "name": "Process_by_channel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Process lead_nurture results for variation: by_channel\nconst results = items.map(item => {\n  return {\n    json: {\n      ...item.json,\n      processed: true,\n      category: 'lead_nurture',\n      variation: 'by_channel',\n      timestamp: new Date().toISOString()\n    }\n  };\n});\nreturn results;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "d456dfbb-8840-53e9-6d57-0c69b19572e7"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'lead_nurture', variation: 'by_channel' }) }}"
+      },
+      "id": "08278c84-d9c7-89b7-7fda-deed40083694"
+    }
+  ],
+  "connections": {
+    "Cron_by_channel": {
+      "main": [
+        [
+          {
+            "node": "Set_by_channel_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_channel_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Outreach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Outreach": {
+      "main": [
+        [
+          {
+            "node": "Process_by_channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process_by_channel": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "leads"
+    },
+    {
+      "name": "nurture"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "name": "0853_monitoring_health_by_severity_00",
+  "nodes": [
+    {
+      "name": "Manual_by_severity",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "1c7e9530-d7ab-a67e-f08c-fddc60236bdb"
+    },
+    {
+      "name": "Set_by_severity_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "monitoring_health",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_severity",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "853",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "8544c280-1153-8257-9e4c-6901bccee07d"
+    },
+    {
+      "name": "Health_Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/health",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "ded8dff5-affd-829a-2c99-3b6677b59cf2"
+    },
+    {
+      "name": "Is_Healthy",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json[\"status\"]}}",
+              "rightValue": "healthy",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "13899a38-e1ce-fa15-ed10-6a75f4922dd4"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[monitoring_health] Report - by_severity",
+        "html": "<h2>monitoring_health Report</h2><p>Variation: by_severity</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "ddceb909-4684-0128-1986-a6b87c888906"
+    }
+  ],
+  "connections": {
+    "Manual_by_severity": {
+      "main": [
+        [
+          {
+            "node": "Set_by_severity_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_severity_Context": {
+      "main": [
+        [
+          {
+            "node": "Health_Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Health_Check": {
+      "main": [
+        [
+          {
+            "node": "Is_Healthy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is_Healthy": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "monitoring"
+    },
+    {
+      "name": "health"
+    }
+  ]
+}

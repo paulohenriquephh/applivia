@@ -1,0 +1,146 @@
+{
+  "name": "0613_invoicing_by_method_02",
+  "nodes": [
+    {
+      "name": "Manual_by_method",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "75e774de-1ce2-b4ad-7de8-39a21a243063"
+    },
+    {
+      "name": "Set_by_method_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "invoicing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_method",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "613",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "319cd956-4304-2a44-f171-259c1461402a"
+    },
+    {
+      "name": "CrewAI_Finance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "finance"
+            },
+            {
+              "name": "task",
+              "value": "by_method"
+            }
+          ]
+        }
+      },
+      "id": "848be2a9-13d0-9827-ae07-1726a6888c93"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[invoicing] Report - by_method",
+        "html": "<h2>invoicing Report</h2><p>Variation: by_method</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "aeaad6f2-d657-c1ed-352b-13b0dc7bec69"
+    }
+  ],
+  "connections": {
+    "Manual_by_method": {
+      "main": [
+        [
+          {
+            "node": "Set_by_method_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_method_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Finance": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "invoicing"
+    },
+    {
+      "name": "billing"
+    }
+  ]
+}

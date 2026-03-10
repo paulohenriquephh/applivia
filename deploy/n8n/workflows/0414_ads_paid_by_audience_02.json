@@ -1,0 +1,152 @@
+{
+  "name": "0414_ads_paid_by_audience_02",
+  "nodes": [
+    {
+      "name": "Cron_by_audience",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */15 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "a5df40b7-c015-259c-cd17-1bb81c49f1b0"
+    },
+    {
+      "name": "Set_by_audience_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "ads_paid",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_audience",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "414",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "af02332e-b757-1513-4dc7-481142d7ea83"
+    },
+    {
+      "name": "CrewAI_Social",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "ads"
+            },
+            {
+              "name": "task",
+              "value": "by_audience"
+            }
+          ]
+        }
+      },
+      "id": "efb6fab9-50a7-610a-4b50-4a6bb652245c"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'ads_paid', variation: 'by_audience' }) }}"
+      },
+      "id": "38f984eb-0c07-ad85-1fb4-cbcf1418c11b"
+    }
+  ],
+  "connections": {
+    "Cron_by_audience": {
+      "main": [
+        [
+          {
+            "node": "Set_by_audience_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_audience_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Social": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "ads"
+    },
+    {
+      "name": "paid"
+    }
+  ]
+}

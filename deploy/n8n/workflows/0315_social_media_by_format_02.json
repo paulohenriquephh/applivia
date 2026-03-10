@@ -1,0 +1,152 @@
+{
+  "name": "0315_social_media_by_format_02",
+  "nodes": [
+    {
+      "name": "Schedule_by_format",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "847e6a97-2f8f-12f9-bc9c-a7c39c4d1c84"
+    },
+    {
+      "name": "Set_by_format_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "social_media",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_format",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "315",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "0f0dac37-eb2a-60dc-9f8f-4a9e4734e189"
+    },
+    {
+      "name": "CrewAI_Social",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "social_media"
+            },
+            {
+              "name": "task",
+              "value": "by_format"
+            }
+          ]
+        }
+      },
+      "id": "9491db8b-f33d-c650-dcb0-4d34a8729dcc"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for social_media/by_format\nconsole.log('Workflow 0315 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "59c54fc8-d335-8c25-df63-af39636c0144"
+    }
+  ],
+  "connections": {
+    "Schedule_by_format": {
+      "main": [
+        [
+          {
+            "node": "Set_by_format_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_format_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Social": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "social"
+    },
+    {
+      "name": "media"
+    }
+  ]
+}

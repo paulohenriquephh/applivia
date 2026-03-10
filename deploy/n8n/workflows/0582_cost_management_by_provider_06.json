@@ -1,0 +1,147 @@
+{
+  "name": "0582_cost_management_by_provider_06",
+  "nodes": [
+    {
+      "name": "Webhook_by_provider",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "cost_management/by_provider/0582",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "441e3fd5-afe8-5f2c-6023-56acb754c7cf"
+    },
+    {
+      "name": "Set_by_provider_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "cost_management",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_provider",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "582",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "240768c2-c7c2-ebfd-c5c6-3b8d6ed8e481"
+    },
+    {
+      "name": "CrewAI_Finance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "finance"
+            },
+            {
+              "name": "task",
+              "value": "by_provider"
+            }
+          ]
+        }
+      },
+      "id": "f9d75c42-f9bb-82b2-d5b2-11652933f985"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'cost_management', variation: 'by_provider' }) }}"
+      },
+      "id": "bd0e995c-846d-164d-d5c5-aa5f9a058209"
+    }
+  ],
+  "connections": {
+    "Webhook_by_provider": {
+      "main": [
+        [
+          {
+            "node": "Set_by_provider_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_provider_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Finance": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "cost"
+    },
+    {
+      "name": "management"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "name": "{{ name }}",
+  "nodes": [
+    {
+      "id": "{{ trigger_id }}",
+      "name": "Trigger",
+      "type": "n8n-nodes-base.{{ trigger_type }}",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "parameters": {}
+    },
+    {
+      "id": "{{ process_id }}",
+      "name": "Process",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "parameters": {
+        "jsCode": "// Process logic here\nreturn items;"
+      }
+    },
+    {
+      "id": "{{ output_id }}",
+      "name": "Output",
+      "type": "n8n-nodes-base.{{ output_type }}",
+      "typeVersion": 1,
+      "position": [750, 300],
+      "parameters": {}
+    }
+  ],
+  "connections": {
+    "Trigger": {
+      "main": [[{"node": "Process", "type": "main", "index": 0}]]
+    },
+    "Process": {
+      "main": [[{"node": "Output", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true
+  }
+}

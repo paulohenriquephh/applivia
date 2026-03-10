@@ -1,0 +1,172 @@
+{
+  "name": "0266_content_creation_by_format_03",
+  "nodes": [
+    {
+      "name": "Webhook_by_format",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "content_creation/by_format/0266",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "id": "b4c09b1f-2741-c9b4-e105-9017324b60e7"
+    },
+    {
+      "name": "Set_by_format_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "content_creation",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_format",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "266",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "08441b47-debc-35c5-dd2d-fb5083aef981"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_format"
+            }
+          ]
+        }
+      },
+      "id": "96b21531-d275-dd23-c1af-0ffb37708407"
+    },
+    {
+      "name": "Format_by_format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format content_creation output for by_format\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_format' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "eed5ba02-5bb0-2365-bf04-4ca24f750eb5"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'content_creation', variation: 'by_format' }) }}"
+      },
+      "id": "34567ff9-f23f-9ed8-3666-17b6b9c70fdc"
+    }
+  ],
+  "connections": {
+    "Webhook_by_format": {
+      "main": [
+        [
+          {
+            "node": "Set_by_format_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_format_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_format": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "content"
+    },
+    {
+      "name": "creation"
+    }
+  ]
+}

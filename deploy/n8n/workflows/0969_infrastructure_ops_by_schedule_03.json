@@ -1,0 +1,182 @@
+{
+  "name": "0969_infrastructure_ops_by_schedule_03",
+  "nodes": [
+    {
+      "name": "Cron_by_schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 */4 * * *"
+            }
+          ]
+        }
+      },
+      "id": "e0217430-f5b4-d98b-c476-13fabfdfe7bb"
+    },
+    {
+      "name": "Set_by_schedule_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "infrastructure_ops",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_schedule",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "969",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "a15485b9-523c-de9e-2a68-b727b5c95c96"
+    },
+    {
+      "name": "Health_Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/health",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "ad9f0529-f830-b07e-036d-8f681e33eb90"
+    },
+    {
+      "name": "Is_Healthy",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json[\"status\"]}}",
+              "rightValue": "healthy",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "a3d47c4c-ef87-8e0e-cf62-5d128439d35b"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[infrastructure_ops] Report - by_schedule",
+        "html": "<h2>infrastructure_ops Report</h2><p>Variation: by_schedule</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "0c7305dd-a53c-4f4e-a0ef-207b629925cb"
+    }
+  ],
+  "connections": {
+    "Cron_by_schedule": {
+      "main": [
+        [
+          {
+            "node": "Set_by_schedule_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_schedule_Context": {
+      "main": [
+        [
+          {
+            "node": "Health_Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Health_Check": {
+      "main": [
+        [
+          {
+            "node": "Is_Healthy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is_Healthy": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "infrastructure"
+    },
+    {
+      "name": "ops"
+    }
+  ]
+}

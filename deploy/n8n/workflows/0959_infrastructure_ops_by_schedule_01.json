@@ -1,0 +1,179 @@
+{
+  "name": "0959_infrastructure_ops_by_schedule_01",
+  "nodes": [
+    {
+      "name": "Cron_by_schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */30 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "26cfd4da-bf9f-a037-b0aa-6117a81762c1"
+    },
+    {
+      "name": "Set_by_schedule_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "infrastructure_ops",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_schedule",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "959",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "39e33f32-a6d0-7a30-2fd7-0518aadf6d7f"
+    },
+    {
+      "name": "Health_Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/health",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "13047810-55f7-c07f-d15f-e53b027ef02d"
+    },
+    {
+      "name": "Is_Healthy",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json[\"status\"]}}",
+              "rightValue": "healthy",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "0b28429e-fb96-b56a-5a28-6edee63c0b8b"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for infrastructure_ops/by_schedule\nconsole.log('Workflow 0959 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "7b1637a7-089d-4031-709d-c56ed3b28be2"
+    }
+  ],
+  "connections": {
+    "Cron_by_schedule": {
+      "main": [
+        [
+          {
+            "node": "Set_by_schedule_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_schedule_Context": {
+      "main": [
+        [
+          {
+            "node": "Health_Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Health_Check": {
+      "main": [
+        [
+          {
+            "node": "Is_Healthy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is_Healthy": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "infrastructure"
+    },
+    {
+      "name": "ops"
+    }
+  ]
+}

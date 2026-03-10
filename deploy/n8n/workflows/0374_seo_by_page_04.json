@@ -1,0 +1,152 @@
+{
+  "name": "0374_seo_by_page_04",
+  "nodes": [
+    {
+      "name": "Cron_by_page",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */15 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "dd541be7-a7ef-8fbf-539b-1bf3d1626d21"
+    },
+    {
+      "name": "Set_by_page_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "seo",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_page",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "374",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "9fd905fd-9c20-c27c-0026-28ba9190dfa6"
+    },
+    {
+      "name": "CrewAI_Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "seo"
+            },
+            {
+              "name": "task",
+              "value": "by_page"
+            }
+          ]
+        }
+      },
+      "id": "3baafedc-703c-fb03-b26b-e2b95b4ec675"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'seo', variation: 'by_page' }) }}"
+      },
+      "id": "e1d0b8fd-9797-03cf-135b-df6af94fd169"
+    }
+  ],
+  "connections": {
+    "Cron_by_page": {
+      "main": [
+        [
+          {
+            "node": "Set_by_page_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_page_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Research": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "seo"
+    },
+    {
+      "name": "optimization"
+    }
+  ]
+}

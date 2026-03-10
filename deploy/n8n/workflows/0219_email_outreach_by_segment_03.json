@@ -1,0 +1,177 @@
+{
+  "name": "0219_email_outreach_by_segment_03",
+  "nodes": [
+    {
+      "name": "Cron_by_segment",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 0 * * *"
+            }
+          ]
+        }
+      },
+      "id": "98440f70-5ffb-a8b7-11f9-6b84bb74a720"
+    },
+    {
+      "name": "Set_by_segment_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "email_outreach",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_segment",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "219",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "7c63792c-29ae-acd2-e9af-6b89c8fafd0b"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_segment"
+            }
+          ]
+        }
+      },
+      "id": "ebc25763-2675-bf89-5048-abe17461b5f9"
+    },
+    {
+      "name": "Format_by_segment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format email_outreach output for by_segment\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_segment' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "f47232f5-4259-44c8-028e-175ff8108417"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for email_outreach/by_segment\nconsole.log('Workflow 0219 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "9b893442-2e15-dde4-e561-1569bc2b118b"
+    }
+  ],
+  "connections": {
+    "Cron_by_segment": {
+      "main": [
+        [
+          {
+            "node": "Set_by_segment_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_segment_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_segment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_segment": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "email"
+    },
+    {
+      "name": "outreach"
+    }
+  ]
+}

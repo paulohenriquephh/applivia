@@ -1,0 +1,154 @@
+{
+  "name": "0516_revenue_finance_by_metric_03",
+  "nodes": [
+    {
+      "name": "Webhook_by_metric",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "revenue_finance/by_metric/0516",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "id": "72ed466e-aa77-73b8-88ae-1738eb8ebd00"
+    },
+    {
+      "name": "Set_by_metric_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "revenue_finance",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_metric",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "516",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "2d9c0344-b54e-470e-0e66-622368f1e71f"
+    },
+    {
+      "name": "CrewAI_Finance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "finance"
+            },
+            {
+              "name": "task",
+              "value": "by_metric"
+            }
+          ]
+        }
+      },
+      "id": "0d83f808-b473-89d2-0a52-be0ff0659a62"
+    },
+    {
+      "name": "Notify_Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "[REVENUE_FINANCE] Workflow 0516 (by_metric) completed.\nResult: {{ $json.result }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      },
+      "id": "0398fce9-4052-3414-3208-fd9b4493d1e8"
+    }
+  ],
+  "connections": {
+    "Webhook_by_metric": {
+      "main": [
+        [
+          {
+            "node": "Set_by_metric_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_metric_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Finance": {
+      "main": [
+        [
+          {
+            "node": "Notify_Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "revenue"
+    },
+    {
+      "name": "finance"
+    }
+  ]
+}

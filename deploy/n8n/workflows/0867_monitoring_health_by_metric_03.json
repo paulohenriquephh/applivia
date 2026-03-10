@@ -1,0 +1,174 @@
+{
+  "name": "0867_monitoring_health_by_metric_03",
+  "nodes": [
+    {
+      "name": "Webhook_by_metric",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "monitoring_health/by_metric/0867",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "8888a72a-2ea4-1366-dd4b-13506181a207"
+    },
+    {
+      "name": "Set_by_metric_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "monitoring_health",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_metric",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "867",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "2b633ec1-63ab-426c-c4d3-53cb15dbe29a"
+    },
+    {
+      "name": "Health_Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/health",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "d34eb79d-6e62-3566-916b-f0a1a88fe570"
+    },
+    {
+      "name": "Is_Healthy",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json[\"status\"]}}",
+              "rightValue": "healthy",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "0def22e4-42f5-cc75-03d9-15289bb8b4ba"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for monitoring_health/by_metric\nconsole.log('Workflow 0867 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "e2bc3f96-89d2-5e30-20ab-107da6f596d0"
+    }
+  ],
+  "connections": {
+    "Webhook_by_metric": {
+      "main": [
+        [
+          {
+            "node": "Set_by_metric_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_metric_Context": {
+      "main": [
+        [
+          {
+            "node": "Health_Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Health_Check": {
+      "main": [
+        [
+          {
+            "node": "Is_Healthy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is_Healthy": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "monitoring"
+    },
+    {
+      "name": "health"
+    }
+  ]
+}

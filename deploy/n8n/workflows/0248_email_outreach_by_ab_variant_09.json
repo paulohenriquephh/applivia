@@ -1,0 +1,175 @@
+{
+  "name": "0248_email_outreach_by_ab_variant_09",
+  "nodes": [
+    {
+      "name": "Manual_by_ab_variant",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "8735450f-ab63-e3a8-018d-d0cd8e52c510"
+    },
+    {
+      "name": "Set_by_ab_variant_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "email_outreach",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_ab_variant",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "248",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "45cf732c-9a4c-c796-2e88-1d8bbe93911d"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_ab_variant"
+            }
+          ]
+        }
+      },
+      "id": "b33efa5f-1ca7-cf86-c931-153c709713bd"
+    },
+    {
+      "name": "Format_by_ab_variant",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format email_outreach output for by_ab_variant\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_ab_variant' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "149fa45d-ff15-a642-9bda-6f75b27e7e94"
+    },
+    {
+      "name": "Notify_Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "[EMAIL_OUTREACH] Workflow 0248 (by_ab_variant) completed.\nResult: {{ $json.result }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      },
+      "id": "b5aa254d-f116-ef99-be2b-a6a67da2c069"
+    }
+  ],
+  "connections": {
+    "Manual_by_ab_variant": {
+      "main": [
+        [
+          {
+            "node": "Set_by_ab_variant_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_ab_variant_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_ab_variant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_ab_variant": {
+      "main": [
+        [
+          {
+            "node": "Notify_Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "email"
+    },
+    {
+      "name": "outreach"
+    }
+  ]
+}

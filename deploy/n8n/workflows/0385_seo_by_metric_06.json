@@ -1,0 +1,155 @@
+{
+  "name": "0385_seo_by_metric_06",
+  "nodes": [
+    {
+      "name": "Schedule_by_metric",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */15 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "860ca472-baaf-ad2e-4cf6-68343aa26d8d"
+    },
+    {
+      "name": "Set_by_metric_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "seo",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_metric",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "385",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "9dd866dd-941b-f969-7868-3f286595daa7"
+    },
+    {
+      "name": "CrewAI_Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "seo"
+            },
+            {
+              "name": "task",
+              "value": "by_metric"
+            }
+          ]
+        }
+      },
+      "id": "d7c2cf68-ef2f-47bb-7e22-85d2966d6405"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[seo] Report - by_metric",
+        "html": "<h2>seo Report</h2><p>Variation: by_metric</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "e268a6dd-7e71-b980-362e-10acbfcfdd63"
+    }
+  ],
+  "connections": {
+    "Schedule_by_metric": {
+      "main": [
+        [
+          {
+            "node": "Set_by_metric_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_metric_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Research": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "seo"
+    },
+    {
+      "name": "optimization"
+    }
+  ]
+}

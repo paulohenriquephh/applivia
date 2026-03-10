@@ -1,0 +1,147 @@
+{
+  "name": "0447_ads_paid_by_campaign_09",
+  "nodes": [
+    {
+      "name": "Webhook_by_campaign",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "ads_paid/by_campaign/0447",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "7dcb01b2-4c87-fde4-8881-24888801cb01"
+    },
+    {
+      "name": "Set_by_campaign_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "ads_paid",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_campaign",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "447",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "7333d991-e525-7e98-15a6-2c087559a26e"
+    },
+    {
+      "name": "CrewAI_Social",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "ads"
+            },
+            {
+              "name": "task",
+              "value": "by_campaign"
+            }
+          ]
+        }
+      },
+      "id": "cbeb8c9e-9875-2947-eaf1-949df90431d7"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for ads_paid/by_campaign\nconsole.log('Workflow 0447 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "d6670589-ccaf-6f91-459a-3a584d1baa6a"
+    }
+  ],
+  "connections": {
+    "Webhook_by_campaign": {
+      "main": [
+        [
+          {
+            "node": "Set_by_campaign_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_campaign_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Social": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "ads"
+    },
+    {
+      "name": "paid"
+    }
+  ]
+}

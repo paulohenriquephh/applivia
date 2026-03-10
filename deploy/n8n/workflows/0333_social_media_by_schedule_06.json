@@ -1,0 +1,146 @@
+{
+  "name": "0333_social_media_by_schedule_06",
+  "nodes": [
+    {
+      "name": "Manual_by_schedule",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "4daebdb9-9a14-cad9-610d-49cc02d1cd5d"
+    },
+    {
+      "name": "Set_by_schedule_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "social_media",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_schedule",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "333",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "a365a5fb-67b2-9ca1-6575-c2d5f4180e9b"
+    },
+    {
+      "name": "CrewAI_Social",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "social_media"
+            },
+            {
+              "name": "task",
+              "value": "by_schedule"
+            }
+          ]
+        }
+      },
+      "id": "52ef82a3-2d0a-21aa-0c09-f3b8e73e6e2a"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[social_media] Report - by_schedule",
+        "html": "<h2>social_media Report</h2><p>Variation: by_schedule</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "417f4030-41a0-2eb2-a773-b161fb9cd695"
+    }
+  ],
+  "connections": {
+    "Manual_by_schedule": {
+      "main": [
+        [
+          {
+            "node": "Set_by_schedule_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_schedule_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Social": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "social"
+    },
+    {
+      "name": "media"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "uid": "singularity-seo",
+  "title": "07 - SEO Rankings",
+  "tags": ["singularity", "seo"],
+  "timezone": "utc",
+  "refresh": "30m",
+  "time": {"from": "now-30d", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "title": "Tracked Keywords", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "targets": [{"rawSql": "SELECT COUNT(DISTINCT keyword) as value FROM seo_rankings", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 2, "title": "Avg Position", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "targets": [{"rawSql": "SELECT AVG(position) as value FROM seo_rankings WHERE checked_at > NOW() - INTERVAL '7 days'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"thresholds": {"steps": [{"value": 0, "color": "green"}, {"value": 10, "color": "yellow"}, {"value": 30, "color": "red"}]}}}
+    },
+    {
+      "id": 3, "title": "Organic Traffic (Est.)", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "targets": [{"rawSql": "SELECT SUM(estimated_traffic) as value FROM seo_rankings WHERE checked_at > NOW() - INTERVAL '7 days'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 4, "title": "Backlinks", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "targets": [{"rawSql": "SELECT COUNT(*) as value FROM seo_backlinks WHERE status='active'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 5, "title": "Keyword Rankings Over Time", "type": "timeseries", "gridPos": {"h": 10, "w": 24, "x": 0, "y": 4},
+      "targets": [{"rawSql": "SELECT checked_at as time, keyword as metric, position as value FROM seo_rankings WHERE $__timeFilter(checked_at) ORDER BY checked_at", "refId": "A", "format": "time_series"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"custom": {"axisPlacement": "right"}}}
+    }
+  ],
+  "schemaVersion": 39
+}

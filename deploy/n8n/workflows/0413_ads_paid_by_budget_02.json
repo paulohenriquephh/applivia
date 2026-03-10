@@ -1,0 +1,146 @@
+{
+  "name": "0413_ads_paid_by_budget_02",
+  "nodes": [
+    {
+      "name": "Manual_by_budget",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "d88611bf-fe75-4252-0cd9-4da23f0b7846"
+    },
+    {
+      "name": "Set_by_budget_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "ads_paid",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_budget",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "413",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "910204ae-2345-5ec1-c695-85bfb2c6bd54"
+    },
+    {
+      "name": "CrewAI_Social",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "ads"
+            },
+            {
+              "name": "task",
+              "value": "by_budget"
+            }
+          ]
+        }
+      },
+      "id": "80cfc3f5-c124-7279-228d-1552296a38f3"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[ads_paid] Report - by_budget",
+        "html": "<h2>ads_paid Report</h2><p>Variation: by_budget</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "e0537de3-4b9a-f94c-c54a-0149d216afc0"
+    }
+  ],
+  "connections": {
+    "Manual_by_budget": {
+      "main": [
+        [
+          {
+            "node": "Set_by_budget_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_budget_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Social": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "ads"
+    },
+    {
+      "name": "paid"
+    }
+  ]
+}

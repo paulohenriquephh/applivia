@@ -1,0 +1,175 @@
+{
+  "name": "0237_email_outreach_by_sequence_07",
+  "nodes": [
+    {
+      "name": "Webhook_by_sequence",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "email_outreach/by_sequence/0237",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "675c03a0-8353-317c-58d4-f7215e2e8bd6"
+    },
+    {
+      "name": "Set_by_sequence_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "email_outreach",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_sequence",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "237",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "1c892453-d645-945a-2646-59eec9fe2fd2"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_sequence"
+            }
+          ]
+        }
+      },
+      "id": "13ec6ec1-a4d5-0f72-6f4e-70c6650b39ac"
+    },
+    {
+      "name": "Format_by_sequence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format email_outreach output for by_sequence\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_sequence' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "5559ecd5-66a8-c7c4-8560-2d3cc4e34968"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[email_outreach] Report - by_sequence",
+        "html": "<h2>email_outreach Report</h2><p>Variation: by_sequence</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "aa05c24b-8a5f-de69-ac0f-8ca9ac0b938a"
+    }
+  ],
+  "connections": {
+    "Webhook_by_sequence": {
+      "main": [
+        [
+          {
+            "node": "Set_by_sequence_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_sequence_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_sequence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_sequence": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "email"
+    },
+    {
+      "name": "outreach"
+    }
+  ]
+}

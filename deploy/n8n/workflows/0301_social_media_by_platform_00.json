@@ -1,0 +1,150 @@
+{
+  "name": "0301_social_media_by_platform_00",
+  "nodes": [
+    {
+      "name": "Webhook_by_platform",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "social_media/by_platform/0301",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "id": "6e1a3751-d703-dec0-7c6a-6f095f472cf0"
+    },
+    {
+      "name": "Set_by_platform_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "social_media",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_platform",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "301",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "9e5f6622-5299-1354-75d6-2b376a38c95f"
+    },
+    {
+      "name": "CrewAI_Social",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "social_media"
+            },
+            {
+              "name": "task",
+              "value": "by_platform"
+            }
+          ]
+        }
+      },
+      "id": "96fcaa98-da88-a7bc-f107-e65740c3878d"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[social_media] Report - by_platform",
+        "html": "<h2>social_media Report</h2><p>Variation: by_platform</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "9254f148-b902-3044-fadf-1437c550b90a"
+    }
+  ],
+  "connections": {
+    "Webhook_by_platform": {
+      "main": [
+        [
+          {
+            "node": "Set_by_platform_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_platform_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Social": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "social"
+    },
+    {
+      "name": "media"
+    }
+  ]
+}

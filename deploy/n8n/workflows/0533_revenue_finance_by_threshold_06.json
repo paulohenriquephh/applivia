@@ -1,0 +1,146 @@
+{
+  "name": "0533_revenue_finance_by_threshold_06",
+  "nodes": [
+    {
+      "name": "Manual_by_threshold",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "c082e359-2f3a-8c74-c25e-b2669b2b396f"
+    },
+    {
+      "name": "Set_by_threshold_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "revenue_finance",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_threshold",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "533",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "17da5ecc-69a2-05d1-55a6-56ec6303e0fc"
+    },
+    {
+      "name": "CrewAI_Finance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "finance"
+            },
+            {
+              "name": "task",
+              "value": "by_threshold"
+            }
+          ]
+        }
+      },
+      "id": "e8562554-cf69-2d73-cd21-7bd984d83fa3"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[revenue_finance] Report - by_threshold",
+        "html": "<h2>revenue_finance Report</h2><p>Variation: by_threshold</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "208464f0-02f3-c110-05d0-3025b4c05960"
+    }
+  ],
+  "connections": {
+    "Manual_by_threshold": {
+      "main": [
+        [
+          {
+            "node": "Set_by_threshold_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_threshold_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Finance": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "revenue"
+    },
+    {
+      "name": "finance"
+    }
+  ]
+}

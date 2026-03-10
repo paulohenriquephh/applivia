@@ -1,0 +1,179 @@
+{
+  "name": "0212_email_outreach_by_sequence_02",
+  "nodes": [
+    {
+      "name": "Webhook_by_sequence",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "email_outreach/by_sequence/0212",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "0f30c0be-1792-0f7b-38d1-de7de66e259e"
+    },
+    {
+      "name": "Set_by_sequence_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "email_outreach",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_sequence",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "212",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "7af53480-2a89-d048-37cc-624ada4548be"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_sequence"
+            }
+          ]
+        }
+      },
+      "id": "0eca7041-c39f-2a13-7e0b-6b793f32b606"
+    },
+    {
+      "name": "Format_by_sequence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format email_outreach output for by_sequence\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_sequence' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "c9cda97d-41aa-b9e1-2e65-5de63df2c88b"
+    },
+    {
+      "name": "Notify_Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "[EMAIL_OUTREACH] Workflow 0212 (by_sequence) completed.\nResult: {{ $json.result }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      },
+      "id": "c73d3eed-9387-bd44-c306-67aa774b05b3"
+    }
+  ],
+  "connections": {
+    "Webhook_by_sequence": {
+      "main": [
+        [
+          {
+            "node": "Set_by_sequence_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_sequence_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_sequence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_sequence": {
+      "main": [
+        [
+          {
+            "node": "Notify_Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "email"
+    },
+    {
+      "name": "outreach"
+    }
+  ]
+}

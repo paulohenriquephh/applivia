@@ -1,0 +1,146 @@
+{
+  "name": "0353_seo_by_competitor_00",
+  "nodes": [
+    {
+      "name": "Manual_by_competitor",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "f37e89ca-3542-0ce5-fd45-49b5a77f89a7"
+    },
+    {
+      "name": "Set_by_competitor_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "seo",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_competitor",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "353",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "abb6da6d-cb82-abd7-9ac7-7244b535ad02"
+    },
+    {
+      "name": "CrewAI_Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "seo"
+            },
+            {
+              "name": "task",
+              "value": "by_competitor"
+            }
+          ]
+        }
+      },
+      "id": "247624e3-0f22-8797-f78f-cd0acf638773"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[seo] Report - by_competitor",
+        "html": "<h2>seo Report</h2><p>Variation: by_competitor</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "b007d25c-1bbf-13bb-af9f-ff13c690967e"
+    }
+  ],
+  "connections": {
+    "Manual_by_competitor": {
+      "main": [
+        [
+          {
+            "node": "Set_by_competitor_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_competitor_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Research": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "seo"
+    },
+    {
+      "name": "optimization"
+    }
+  ]
+}

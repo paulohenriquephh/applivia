@@ -1,0 +1,45 @@
+{
+  "uid": "singularity-api-costs",
+  "title": "02 - API Costs & Budget",
+  "tags": ["singularity", "budget"],
+  "timezone": "utc",
+  "refresh": "1m",
+  "time": {"from": "now-7d", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "title": "Monthly Budget Usage", "type": "gauge", "gridPos": {"h": 6, "w": 8, "x": 0, "y": 0},
+      "targets": [{"expr": "crewai_budget_spend_usd_total", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"max": 83.33, "thresholds": {"steps": [{"value": 0, "color": "green"}, {"value": 66, "color": "yellow"}, {"value": 80, "color": "red"}]}, "unit": "currencyUSD"}}
+    },
+    {
+      "id": 2, "title": "Monthly Remaining", "type": "stat", "gridPos": {"h": 6, "w": 8, "x": 8, "y": 0},
+      "targets": [{"expr": "crewai_budget_remaining_monthly_usd", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD", "color": {"mode": "thresholds"}, "thresholds": {"steps": [{"value": 0, "color": "red"}, {"value": 20, "color": "yellow"}, {"value": 50, "color": "green"}]}}}
+    },
+    {
+      "id": 3, "title": "Alert Level", "type": "stat", "gridPos": {"h": 6, "w": 8, "x": 16, "y": 0},
+      "targets": [{"expr": "crewai_budget_remaining_monthly_usd > 0", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"}
+    },
+    {
+      "id": 4, "title": "Cost per Model (Daily)", "type": "timeseries", "gridPos": {"h": 8, "w": 24, "x": 0, "y": 6},
+      "targets": [{"expr": "increase(crewai_budget_spend_usd_total[24h])", "legendFormat": "{{model}}", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 5, "title": "LLM Calls by Model", "type": "piechart", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 14},
+      "targets": [{"expr": "increase(crewai_llm_calls_total[24h])", "legendFormat": "{{model}}", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"}
+    },
+    {
+      "id": 6, "title": "Cost per Provider (Weekly)", "type": "barchart", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 14},
+      "targets": [{"expr": "increase(crewai_budget_spend_usd_total[7d])", "legendFormat": "{{model}}", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    }
+  ],
+  "schemaVersion": 39
+}

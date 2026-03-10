@@ -1,0 +1,175 @@
+{
+  "name": "0277_content_creation_by_platform_05",
+  "nodes": [
+    {
+      "name": "Webhook_by_platform",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "content_creation/by_platform/0277",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "e629fd31-40c4-6d66-e9c3-a9af950b15a2"
+    },
+    {
+      "name": "Set_by_platform_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "content_creation",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_platform",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "277",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "33b18ae4-b2ef-ff7f-f06e-31246b017d4d"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_platform"
+            }
+          ]
+        }
+      },
+      "id": "09598a30-991e-3f16-fc6a-b6467f3350b9"
+    },
+    {
+      "name": "Format_by_platform",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format content_creation output for by_platform\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_platform' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "c699518d-48c5-1dcd-5cee-c1bb0f389d33"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[content_creation] Report - by_platform",
+        "html": "<h2>content_creation Report</h2><p>Variation: by_platform</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "2ff364bd-bd48-e5e5-6ca0-560df6c5eb07"
+    }
+  ],
+  "connections": {
+    "Webhook_by_platform": {
+      "main": [
+        [
+          {
+            "node": "Set_by_platform_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_platform_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_platform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_platform": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "content"
+    },
+    {
+      "name": "creation"
+    }
+  ]
+}

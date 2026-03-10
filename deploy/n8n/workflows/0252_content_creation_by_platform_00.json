@@ -1,0 +1,179 @@
+{
+  "name": "0252_content_creation_by_platform_00",
+  "nodes": [
+    {
+      "name": "Webhook_by_platform",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "content_creation/by_platform/0252",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "8987ee4e-2464-46a5-79a9-05f8e22e24ae"
+    },
+    {
+      "name": "Set_by_platform_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "content_creation",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_platform",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "252",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "5825b1e2-769b-f370-0bf1-db18daa0d4b6"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_platform"
+            }
+          ]
+        }
+      },
+      "id": "d873e413-d5b7-1ed2-ee6a-311eda7eaf87"
+    },
+    {
+      "name": "Format_by_platform",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format content_creation output for by_platform\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_platform' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "83c6eb3c-6b80-af07-e01e-a33933c2bbff"
+    },
+    {
+      "name": "Notify_Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "[CONTENT_CREATION] Workflow 0252 (by_platform) completed.\nResult: {{ $json.result }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "Telegram"
+        }
+      },
+      "id": "74612cc3-7771-ca65-72e8-a1c11070c46f"
+    }
+  ],
+  "connections": {
+    "Webhook_by_platform": {
+      "main": [
+        [
+          {
+            "node": "Set_by_platform_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_platform_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_platform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_platform": {
+      "main": [
+        [
+          {
+            "node": "Notify_Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "content"
+    },
+    {
+      "name": "creation"
+    }
+  ]
+}

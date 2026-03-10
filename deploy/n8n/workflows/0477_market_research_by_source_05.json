@@ -1,0 +1,150 @@
+{
+  "name": "0477_market_research_by_source_05",
+  "nodes": [
+    {
+      "name": "Webhook_by_source",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "market_research/by_source/0477",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "e51a861f-ec1b-08f3-d8dc-5cfa8c0a6be3"
+    },
+    {
+      "name": "Set_by_source_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "market_research",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_source",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "477",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "91897734-f331-c034-43a3-1bc1fcdccc74"
+    },
+    {
+      "name": "CrewAI_Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "market_research"
+            },
+            {
+              "name": "task",
+              "value": "by_source"
+            }
+          ]
+        }
+      },
+      "id": "078e8b0d-59df-08b6-1c06-5533a1f60e39"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[market_research] Report - by_source",
+        "html": "<h2>market_research Report</h2><p>Variation: by_source</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "1afee8a0-57c8-dd77-84f1-17d8a2eb912b"
+    }
+  ],
+  "connections": {
+    "Webhook_by_source": {
+      "main": [
+        [
+          {
+            "node": "Set_by_source_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_source_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Research": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "market"
+    },
+    {
+      "name": "research"
+    }
+  ]
+}

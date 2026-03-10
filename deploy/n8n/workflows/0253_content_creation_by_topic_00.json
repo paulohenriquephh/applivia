@@ -1,0 +1,171 @@
+{
+  "name": "0253_content_creation_by_topic_00",
+  "nodes": [
+    {
+      "name": "Manual_by_topic",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "30c087dd-d7f4-7e3b-492d-84735556932f"
+    },
+    {
+      "name": "Set_by_topic_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "content_creation",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_topic",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "253",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "92a66e39-fbe9-5af7-2931-ee36d86c166c"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_topic"
+            }
+          ]
+        }
+      },
+      "id": "45e97ead-8a69-81b9-dc62-53a570d34de2"
+    },
+    {
+      "name": "Format_by_topic",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format content_creation output for by_topic\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_topic' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "cb1a496a-2939-fe1e-b87d-701474724097"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[content_creation] Report - by_topic",
+        "html": "<h2>content_creation Report</h2><p>Variation: by_topic</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "899d4cf9-3509-9196-5e69-10ac41115438"
+    }
+  ],
+  "connections": {
+    "Manual_by_topic": {
+      "main": [
+        [
+          {
+            "node": "Set_by_topic_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_topic_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_topic": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "content"
+    },
+    {
+      "name": "creation"
+    }
+  ]
+}

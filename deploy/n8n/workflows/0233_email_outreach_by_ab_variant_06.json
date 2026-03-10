@@ -1,0 +1,171 @@
+{
+  "name": "0233_email_outreach_by_ab_variant_06",
+  "nodes": [
+    {
+      "name": "Manual_by_ab_variant",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {},
+      "id": "e351bd76-9bb0-9a97-3130-cfcc5222cb5d"
+    },
+    {
+      "name": "Set_by_ab_variant_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "email_outreach",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_ab_variant",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "233",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "a9dcb580-2b16-ebcf-1f4f-47ec2e1668ed"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_ab_variant"
+            }
+          ]
+        }
+      },
+      "id": "beffe9cb-ae55-3491-0c84-8214a9817e04"
+    },
+    {
+      "name": "Format_by_ab_variant",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format email_outreach output for by_ab_variant\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_ab_variant' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "6fab0ef1-805e-a4e3-ec84-f708f6ea9eb8"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[email_outreach] Report - by_ab_variant",
+        "html": "<h2>email_outreach Report</h2><p>Variation: by_ab_variant</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "45131ce4-acff-8c12-687f-13a2f70672f3"
+    }
+  ],
+  "connections": {
+    "Manual_by_ab_variant": {
+      "main": [
+        [
+          {
+            "node": "Set_by_ab_variant_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_ab_variant_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_ab_variant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_ab_variant": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "email"
+    },
+    {
+      "name": "outreach"
+    }
+  ]
+}

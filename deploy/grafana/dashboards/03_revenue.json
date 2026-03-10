@@ -1,0 +1,45 @@
+{
+  "uid": "singularity-revenue",
+  "title": "03 - Revenue Tracker",
+  "tags": ["singularity", "revenue"],
+  "timezone": "utc",
+  "refresh": "5m",
+  "time": {"from": "now-30d", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "title": "MRR (Monthly Recurring Revenue)", "type": "stat", "gridPos": {"h": 4, "w": 8, "x": 0, "y": 0},
+      "targets": [{"rawSql": "SELECT SUM(amount) as value FROM revenue WHERE type='recurring' AND date_trunc('month', created_at) = date_trunc('month', NOW())", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 2, "title": "ARR (Annualized)", "type": "stat", "gridPos": {"h": 4, "w": 8, "x": 8, "y": 0},
+      "targets": [{"rawSql": "SELECT SUM(amount) * 12 as value FROM revenue WHERE type='recurring' AND date_trunc('month', created_at) = date_trunc('month', NOW())", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 3, "title": "Total Revenue (This Month)", "type": "stat", "gridPos": {"h": 4, "w": 8, "x": 16, "y": 0},
+      "targets": [{"rawSql": "SELECT SUM(amount) as value FROM revenue WHERE date_trunc('month', created_at) = date_trunc('month', NOW())", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 4, "title": "Revenue Over Time", "type": "timeseries", "gridPos": {"h": 8, "w": 24, "x": 0, "y": 4},
+      "targets": [{"rawSql": "SELECT created_at as time, SUM(amount) as value FROM revenue GROUP BY created_at ORDER BY created_at", "refId": "A", "format": "time_series"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 5, "title": "Revenue by Source", "type": "piechart", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "targets": [{"rawSql": "SELECT source, SUM(amount) as value FROM revenue WHERE created_at > NOW() - INTERVAL '30 days' GROUP BY source", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 6, "title": "Client Count Over Time", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "targets": [{"rawSql": "SELECT date_trunc('day', created_at) as time, COUNT(DISTINCT client_id) as value FROM revenue GROUP BY 1 ORDER BY 1", "refId": "A", "format": "time_series"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    }
+  ],
+  "schemaVersion": 39
+}

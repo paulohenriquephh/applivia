@@ -1,0 +1,172 @@
+{
+  "name": "0206_email_outreach_by_template_01",
+  "nodes": [
+    {
+      "name": "Webhook_by_template",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "email_outreach/by_template/0206",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "id": "9d303f96-351d-a41d-a058-9034fa2b0549"
+    },
+    {
+      "name": "Set_by_template_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "email_outreach",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_template",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "206",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "55bb858f-9f6e-b61d-8e41-5b8c6d10ece8"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_template"
+            }
+          ]
+        }
+      },
+      "id": "273909b0-fc61-0017-9547-941a7cd47f23"
+    },
+    {
+      "name": "Format_by_template",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format email_outreach output for by_template\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_template' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "cca72215-6289-aaa6-c3da-03f82270afe3"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'email_outreach', variation: 'by_template' }) }}"
+      },
+      "id": "9b280314-c054-639a-6f29-c55d7d4136ec"
+    }
+  ],
+  "connections": {
+    "Webhook_by_template": {
+      "main": [
+        [
+          {
+            "node": "Set_by_template_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_template_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_template": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "email"
+    },
+    {
+      "name": "outreach"
+    }
+  ]
+}

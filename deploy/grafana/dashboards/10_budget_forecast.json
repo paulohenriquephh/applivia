@@ -1,0 +1,49 @@
+{
+  "uid": "singularity-budget-forecast",
+  "title": "10 - Budget Forecast",
+  "tags": ["singularity", "budget", "forecast"],
+  "timezone": "utc",
+  "refresh": "5m",
+  "time": {"from": "now-90d", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "title": "Total Budget ($500)", "type": "gauge", "gridPos": {"h": 6, "w": 8, "x": 0, "y": 0},
+      "targets": [{"expr": "crewai_budget_spend_usd_total or vector(0)", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"max": 500, "unit": "currencyUSD", "thresholds": {"steps": [{"value": 0, "color": "green"}, {"value": 350, "color": "yellow"}, {"value": 450, "color": "red"}]}}}
+    },
+    {
+      "id": 2, "title": "Monthly Budget ($83.33)", "type": "gauge", "gridPos": {"h": 6, "w": 8, "x": 8, "y": 0},
+      "targets": [{"expr": "crewai_budget_remaining_monthly_usd or vector(83.33)", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"max": 83.33, "unit": "currencyUSD", "thresholds": {"steps": [{"value": 0, "color": "red"}, {"value": 20, "color": "yellow"}, {"value": 50, "color": "green"}]}}}
+    },
+    {
+      "id": 3, "title": "Daily Burn Rate", "type": "stat", "gridPos": {"h": 6, "w": 8, "x": 16, "y": 0},
+      "targets": [{"expr": "increase(crewai_budget_spend_usd_total[24h])", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD", "thresholds": {"steps": [{"value": 0, "color": "green"}, {"value": 2, "color": "yellow"}, {"value": 5, "color": "red"}]}}}
+    },
+    {
+      "id": 4, "title": "Spend Trajectory (Monthly)", "type": "timeseries", "gridPos": {"h": 8, "w": 24, "x": 0, "y": 6},
+      "targets": [
+        {"expr": "increase(crewai_budget_spend_usd_total[24h])", "legendFormat": "Daily Spend", "refId": "A"},
+        {"expr": "vector(2.78)", "legendFormat": "Daily Target ($83.33/30)", "refId": "B"}
+      ],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 5, "title": "Runway (Days Remaining)", "type": "stat", "gridPos": {"h": 6, "w": 12, "x": 0, "y": 14},
+      "targets": [{"expr": "crewai_budget_remaining_monthly_usd / (increase(crewai_budget_spend_usd_total[24h]) > 0 or vector(0.01))", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "d", "thresholds": {"steps": [{"value": 0, "color": "red"}, {"value": 7, "color": "yellow"}, {"value": 20, "color": "green"}]}}}
+    },
+    {
+      "id": 6, "title": "Spend by Provider", "type": "piechart", "gridPos": {"h": 6, "w": 12, "x": 12, "y": 14},
+      "targets": [{"expr": "increase(crewai_budget_spend_usd_total[30d])", "legendFormat": "{{model}}", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"}
+    }
+  ],
+  "schemaVersion": 39
+}

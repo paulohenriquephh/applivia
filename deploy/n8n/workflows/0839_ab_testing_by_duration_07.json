@@ -1,0 +1,138 @@
+{
+  "name": "0839_ab_testing_by_duration_07",
+  "nodes": [
+    {
+      "name": "Cron_by_duration",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */30 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "70cb8101-5dd2-501e-ae91-867bd354ecee"
+    },
+    {
+      "name": "Set_by_duration_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "ab_testing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_duration",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "839",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "93b43595-ca02-c539-b99d-eecc2d860e04"
+    },
+    {
+      "name": "AB_Eval_by_duration",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// A/B test evaluation for by_duration\nconst variants = items.map(item => {\n  const score = Math.random() * 100;\n  return {\n    json: { ...item.json, variant: 'by_duration', score, significant: score > 50 }\n  };\n});\nreturn variants;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "1b9e21e0-4ad0-da53-e986-1cc0353ae9bc"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for ab_testing/by_duration\nconsole.log('Workflow 0839 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "2d9692c8-8c62-1ec4-c39b-6fd0fa76af37"
+    }
+  ],
+  "connections": {
+    "Cron_by_duration": {
+      "main": [
+        [
+          {
+            "node": "Set_by_duration_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_duration_Context": {
+      "main": [
+        [
+          {
+            "node": "AB_Eval_by_duration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AB_Eval_by_duration": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "testing"
+    },
+    {
+      "name": "ab"
+    }
+  ]
+}

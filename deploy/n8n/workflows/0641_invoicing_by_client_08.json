@@ -1,0 +1,150 @@
+{
+  "name": "0641_invoicing_by_client_08",
+  "nodes": [
+    {
+      "name": "Webhook_by_client",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "invoicing/by_client/0641",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "id": "d53e30e4-8ad4-ef27-6572-828ccc04f6ea"
+    },
+    {
+      "name": "Set_by_client_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "invoicing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_client",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "641",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "2d20647d-32f8-e224-f6d3-e10f6b2603b9"
+    },
+    {
+      "name": "CrewAI_Finance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "finance"
+            },
+            {
+              "name": "task",
+              "value": "by_client"
+            }
+          ]
+        }
+      },
+      "id": "09fa49fb-b3cb-3eaf-718e-c41e3a1766ae"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[invoicing] Report - by_client",
+        "html": "<h2>invoicing Report</h2><p>Variation: by_client</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "5a44f879-f261-2f3c-2724-c3f9612ad9c2"
+    }
+  ],
+  "connections": {
+    "Webhook_by_client": {
+      "main": [
+        [
+          {
+            "node": "Set_by_client_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_client_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Finance": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "invoicing"
+    },
+    {
+      "name": "billing"
+    }
+  ]
+}

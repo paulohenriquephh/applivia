@@ -1,0 +1,133 @@
+{
+  "name": "0847_ab_testing_by_method_09",
+  "nodes": [
+    {
+      "name": "Webhook_by_method",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "ab_testing/by_method/0847",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "3c0aeb85-3bb6-e9f5-8d6e-cb45203fd83e"
+    },
+    {
+      "name": "Set_by_method_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "ab_testing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_method",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "847",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "161b0d12-fca8-43bd-74f6-cf45e9347edd"
+    },
+    {
+      "name": "AB_Eval_by_method",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// A/B test evaluation for by_method\nconst variants = items.map(item => {\n  const score = Math.random() * 100;\n  return {\n    json: { ...item.json, variant: 'by_method', score, significant: score > 50 }\n  };\n});\nreturn variants;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "b60b4e47-4539-db41-b2b9-e8292e535a12"
+    },
+    {
+      "name": "Log_Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Log results for ab_testing/by_method\nconsole.log('Workflow 0847 completed:', JSON.stringify($input.all()));\nreturn items;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "89766629-6ec2-480d-0536-31b000462ccb"
+    }
+  ],
+  "connections": {
+    "Webhook_by_method": {
+      "main": [
+        [
+          {
+            "node": "Set_by_method_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_method_Context": {
+      "main": [
+        [
+          {
+            "node": "AB_Eval_by_method",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AB_Eval_by_method": {
+      "main": [
+        [
+          {
+            "node": "Log_Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "testing"
+    },
+    {
+      "name": "ab"
+    }
+  ]
+}

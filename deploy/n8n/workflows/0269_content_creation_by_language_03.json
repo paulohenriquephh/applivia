@@ -1,0 +1,180 @@
+{
+  "name": "0269_content_creation_by_language_03",
+  "nodes": [
+    {
+      "name": "Cron_by_language",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */5 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "5c3e3e8a-e753-1cd8-3e36-c13dea625471"
+    },
+    {
+      "name": "Set_by_language_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "content_creation",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_language",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "269",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "23bdbd52-e6b2-a4a9-aedb-9be341d8745e"
+    },
+    {
+      "name": "CrewAI_Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "content"
+            },
+            {
+              "name": "task",
+              "value": "by_language"
+            }
+          ]
+        }
+      },
+      "id": "323a2eb2-1701-679b-121a-5d891ab5977e"
+    },
+    {
+      "name": "Format_by_language",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Format content_creation output for by_language\nconst output = items.map(item => ({\n  json: { ...item.json, formatted: true, variation: 'by_language' }\n}));\nreturn output;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "9743dc32-7f55-1e59-5e32-792737f03dac"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[content_creation] Report - by_language",
+        "html": "<h2>content_creation Report</h2><p>Variation: by_language</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "118d7536-e925-8067-d56b-ba42d13b1c0e"
+    }
+  ],
+  "connections": {
+    "Cron_by_language": {
+      "main": [
+        [
+          {
+            "node": "Set_by_language_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_language_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Content": {
+      "main": [
+        [
+          {
+            "node": "Format_by_language",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format_by_language": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "content"
+    },
+    {
+      "name": "creation"
+    }
+  ]
+}

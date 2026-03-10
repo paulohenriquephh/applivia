@@ -1,0 +1,147 @@
+{
+  "name": "0762_feedback_nps_by_trigger_02",
+  "nodes": [
+    {
+      "name": "Webhook_by_trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "feedback_nps/by_trigger/0762",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "1187bea5-23a8-7f19-b81d-d953207ed7e4"
+    },
+    {
+      "name": "Set_by_trigger_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "feedback_nps",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_trigger",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "762",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "23555f41-e40a-a932-0f06-eadf9fc5b9fb"
+    },
+    {
+      "name": "CrewAI_Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "support"
+            },
+            {
+              "name": "task",
+              "value": "by_trigger"
+            }
+          ]
+        }
+      },
+      "id": "4fc5a2e7-84a9-70d9-5060-a31e6e39d32b"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'feedback_nps', variation: 'by_trigger' }) }}"
+      },
+      "id": "6c430a32-ccd3-8678-f8c3-33c41ac6f55a"
+    }
+  ],
+  "connections": {
+    "Webhook_by_trigger": {
+      "main": [
+        [
+          {
+            "node": "Set_by_trigger_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_trigger_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Client": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "feedback"
+    },
+    {
+      "name": "nps"
+    }
+  ]
+}

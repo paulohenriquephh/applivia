@@ -1,0 +1,150 @@
+{
+  "name": "0697_client_management_by_health_09",
+  "nodes": [
+    {
+      "name": "Webhook_by_health",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "client_management/by_health/0697",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "425fa1fa-2962-d7e6-cf66-d89aad80c4e6"
+    },
+    {
+      "name": "Set_by_health_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "client_management",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_health",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "697",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "8892eacf-3645-32e4-3243-c62eadc96637"
+    },
+    {
+      "name": "CrewAI_Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "support"
+            },
+            {
+              "name": "task",
+              "value": "by_health"
+            }
+          ]
+        }
+      },
+      "id": "5659261c-d67e-2422-7333-10d01ad0c6a7"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[client_management] Report - by_health",
+        "html": "<h2>client_management Report</h2><p>Variation: by_health</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "d421aabc-2d1a-89d5-4327-15aea38bcbb3"
+    }
+  ],
+  "connections": {
+    "Webhook_by_health": {
+      "main": [
+        [
+          {
+            "node": "Set_by_health_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_health_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Client": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "client"
+    },
+    {
+      "name": "management"
+    }
+  ]
+}

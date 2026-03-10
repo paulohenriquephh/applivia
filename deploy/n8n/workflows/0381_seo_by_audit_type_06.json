@@ -1,0 +1,150 @@
+{
+  "name": "0381_seo_by_audit_type_06",
+  "nodes": [
+    {
+      "name": "Webhook_by_audit_type",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "seo/by_audit_type/0381",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "id": "8ddcfd7f-323d-8351-9350-35b6343aefec"
+    },
+    {
+      "name": "Set_by_audit_type_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "seo",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_audit_type",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "381",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "12592028-7df8-bd6e-ab01-c277a06ae407"
+    },
+    {
+      "name": "CrewAI_Research",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "seo"
+            },
+            {
+              "name": "task",
+              "value": "by_audit_type"
+            }
+          ]
+        }
+      },
+      "id": "6929c664-136b-8db2-d9f5-521965f54871"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[seo] Report - by_audit_type",
+        "html": "<h2>seo Report</h2><p>Variation: by_audit_type</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "7b572d56-6646-a4b9-3fbd-939046904a22"
+    }
+  ],
+  "connections": {
+    "Webhook_by_audit_type": {
+      "main": [
+        [
+          {
+            "node": "Set_by_audit_type_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_audit_type_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Research": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "seo"
+    },
+    {
+      "name": "optimization"
+    }
+  ]
+}

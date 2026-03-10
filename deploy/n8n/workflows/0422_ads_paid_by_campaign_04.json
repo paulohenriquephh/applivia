@@ -1,0 +1,147 @@
+{
+  "name": "0422_ads_paid_by_campaign_04",
+  "nodes": [
+    {
+      "name": "Webhook_by_campaign",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "ads_paid/by_campaign/0422",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "5eab656f-a7f6-29ca-6f8b-11cc3f439e2e"
+    },
+    {
+      "name": "Set_by_campaign_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "ads_paid",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_campaign",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "422",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "0a50ebc0-ff6f-67a5-6314-ef254c19b2c0"
+    },
+    {
+      "name": "CrewAI_Social",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "ads"
+            },
+            {
+              "name": "task",
+              "value": "by_campaign"
+            }
+          ]
+        }
+      },
+      "id": "d6d321c5-8338-33f9-ef95-b99b21161f8e"
+    },
+    {
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'completed', category: 'ads_paid', variation: 'by_campaign' }) }}"
+      },
+      "id": "b1f607b5-338f-f8c6-e6c9-284cbcc33e62"
+    }
+  ],
+  "connections": {
+    "Webhook_by_campaign": {
+      "main": [
+        [
+          {
+            "node": "Set_by_campaign_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_campaign_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Social": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "ads"
+    },
+    {
+      "name": "paid"
+    }
+  ]
+}

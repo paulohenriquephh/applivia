@@ -1,0 +1,45 @@
+{
+  "uid": "singularity-email",
+  "title": "06 - Email Campaigns",
+  "tags": ["singularity", "email"],
+  "timezone": "utc",
+  "refresh": "5m",
+  "time": {"from": "now-30d", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "title": "Emails Sent (30d)", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "targets": [{"rawSql": "SELECT COUNT(*) as value FROM email_campaigns WHERE created_at > NOW() - INTERVAL '30 days'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 2, "title": "Open Rate", "type": "gauge", "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "targets": [{"rawSql": "SELECT (SUM(CASE WHEN opened THEN 1 ELSE 0 END)::float / NULLIF(COUNT(*), 0)) * 100 as value FROM email_campaigns WHERE created_at > NOW() - INTERVAL '30 days'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "percent", "max": 100, "thresholds": {"steps": [{"value": 0, "color": "red"}, {"value": 20, "color": "yellow"}, {"value": 40, "color": "green"}]}}}
+    },
+    {
+      "id": 3, "title": "Click Rate", "type": "gauge", "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "targets": [{"rawSql": "SELECT (SUM(CASE WHEN clicked THEN 1 ELSE 0 END)::float / NULLIF(COUNT(*), 0)) * 100 as value FROM email_campaigns WHERE created_at > NOW() - INTERVAL '30 days'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "percent", "max": 100, "thresholds": {"steps": [{"value": 0, "color": "red"}, {"value": 5, "color": "yellow"}, {"value": 15, "color": "green"}]}}}
+    },
+    {
+      "id": 4, "title": "Reply Rate", "type": "gauge", "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "targets": [{"rawSql": "SELECT (SUM(CASE WHEN replied THEN 1 ELSE 0 END)::float / NULLIF(COUNT(*), 0)) * 100 as value FROM email_campaigns WHERE created_at > NOW() - INTERVAL '30 days'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "percent", "max": 100, "thresholds": {"steps": [{"value": 0, "color": "red"}, {"value": 3, "color": "yellow"}, {"value": 10, "color": "green"}]}}}
+    },
+    {
+      "id": 5, "title": "Email Performance Over Time", "type": "timeseries", "gridPos": {"h": 8, "w": 24, "x": 0, "y": 4},
+      "targets": [{"rawSql": "SELECT date_trunc('day', created_at) as time, COUNT(*) as sent, SUM(CASE WHEN opened THEN 1 ELSE 0 END) as opened, SUM(CASE WHEN clicked THEN 1 ELSE 0 END) as clicked FROM email_campaigns WHERE $__timeFilter(created_at) GROUP BY 1 ORDER BY 1", "refId": "A", "format": "time_series"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 6, "title": "Bounce Rate", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "targets": [{"rawSql": "SELECT date_trunc('day', created_at) as time, (SUM(CASE WHEN bounced THEN 1 ELSE 0 END)::float / NULLIF(COUNT(*), 0)) * 100 as value FROM email_campaigns WHERE $__timeFilter(created_at) GROUP BY 1 ORDER BY 1", "refId": "A", "format": "time_series"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "percent"}}
+    }
+  ],
+  "schemaVersion": 39
+}

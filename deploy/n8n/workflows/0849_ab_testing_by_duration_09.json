@@ -1,0 +1,141 @@
+{
+  "name": "0849_ab_testing_by_duration_09",
+  "nodes": [
+    {
+      "name": "Cron_by_duration",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 */4 * * *"
+            }
+          ]
+        }
+      },
+      "id": "61ea6b2b-910a-00b7-b09d-8e64fb5522dd"
+    },
+    {
+      "name": "Set_by_duration_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "ab_testing",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_duration",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "849",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "f25e6b99-ef6c-214c-4cdc-0293edf0a5cc"
+    },
+    {
+      "name": "AB_Eval_by_duration",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// A/B test evaluation for by_duration\nconst variants = items.map(item => {\n  const score = Math.random() * 100;\n  return {\n    json: { ...item.json, variant: 'by_duration', score, significant: score > 50 }\n  };\n});\nreturn variants;",
+        "mode": "runOnceForAllItems"
+      },
+      "id": "94b3d513-490a-30db-37ea-5f981b07f575"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[ab_testing] Report - by_duration",
+        "html": "<h2>ab_testing Report</h2><p>Variation: by_duration</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "0befa2d2-b0be-cea4-08a6-627f59bf59b5"
+    }
+  ],
+  "connections": {
+    "Cron_by_duration": {
+      "main": [
+        [
+          {
+            "node": "Set_by_duration_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_duration_Context": {
+      "main": [
+        [
+          {
+            "node": "AB_Eval_by_duration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AB_Eval_by_duration": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "testing"
+    },
+    {
+      "name": "ab"
+    }
+  ]
+}

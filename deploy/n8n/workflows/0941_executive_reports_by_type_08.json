@@ -1,0 +1,150 @@
+{
+  "name": "0941_executive_reports_by_type_08",
+  "nodes": [
+    {
+      "name": "Webhook_by_type",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "executive_reports/by_type/0941",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "id": "4b903b8d-7138-5667-9cd0-7a2e20149e95"
+    },
+    {
+      "name": "Set_by_type_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "executive_reports",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_type",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "941",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "03c3cc80-f3cb-6d5c-64aa-775d8fdfa491"
+    },
+    {
+      "name": "CrewAI_executive_reports",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "market_research"
+            },
+            {
+              "name": "task",
+              "value": "by_type"
+            }
+          ]
+        }
+      },
+      "id": "630f7fbc-c5e5-0c71-1ba9-ff8a44a82073"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1500,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[executive_reports] Report - by_type",
+        "html": "<h2>executive_reports Report</h2><p>Variation: by_type</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "6253106c-14b4-8e4c-7059-94ef145465d0"
+    }
+  ],
+  "connections": {
+    "Webhook_by_type": {
+      "main": [
+        [
+          {
+            "node": "Set_by_type_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_type_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_executive_reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_executive_reports": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "executive"
+    },
+    {
+      "name": "reports"
+    }
+  ]
+}

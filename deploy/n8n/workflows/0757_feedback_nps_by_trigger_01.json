@@ -1,0 +1,150 @@
+{
+  "name": "0757_feedback_nps_by_trigger_01",
+  "nodes": [
+    {
+      "name": "Webhook_by_trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "path": "feedback_nps/by_trigger/0757",
+        "httpMethod": "GET",
+        "responseMode": "lastNode"
+      },
+      "id": "1453659c-30f7-8433-3646-655a20a45178"
+    },
+    {
+      "name": "Set_by_trigger_Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0",
+              "name": "category",
+              "value": "feedback_nps",
+              "type": "string"
+            },
+            {
+              "id": "1",
+              "name": "variation",
+              "value": "by_trigger",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "workflow_id",
+              "value": "757",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "648a98d2-9d1a-e338-e877-88a4a4c5b7b5"
+    },
+    {
+      "name": "CrewAI_Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "url": "http://crewai-api:8001/kickoff",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "crew",
+              "value": "support"
+            },
+            {
+              "name": "task",
+              "value": "by_trigger"
+            }
+          ]
+        }
+      },
+      "id": "7669a7b3-4c7d-618d-2a76-932d8b632864"
+    },
+    {
+      "name": "Email_Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1250,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "[feedback_nps] Report - by_trigger",
+        "html": "<h2>feedback_nps Report</h2><p>Variation: by_trigger</p><p>Result: {{$json.result}}</p>",
+        "options": {}
+      },
+      "id": "27408b57-e900-60d6-a5c1-02527b5901f0"
+    }
+  ],
+  "connections": {
+    "Webhook_by_trigger": {
+      "main": [
+        [
+          {
+            "node": "Set_by_trigger_Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_by_trigger_Context": {
+      "main": [
+        [
+          {
+            "node": "CrewAI_Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CrewAI_Client": {
+      "main": [
+        [
+          {
+            "node": "Email_Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [
+    {
+      "name": "feedback"
+    },
+    {
+      "name": "nps"
+    }
+  ]
+}

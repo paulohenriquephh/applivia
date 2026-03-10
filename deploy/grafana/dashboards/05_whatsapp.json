@@ -1,0 +1,41 @@
+{
+  "uid": "singularity-whatsapp",
+  "title": "05 - WhatsApp Analytics",
+  "tags": ["singularity", "whatsapp"],
+  "timezone": "utc",
+  "refresh": "5m",
+  "time": {"from": "now-7d", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "title": "Messages Sent (24h)", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "targets": [{"rawSql": "SELECT COUNT(*) as value FROM whatsapp_messages WHERE direction='outbound' AND created_at > NOW() - INTERVAL '24 hours'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 2, "title": "Messages Received (24h)", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "targets": [{"rawSql": "SELECT COUNT(*) as value FROM whatsapp_messages WHERE direction='inbound' AND created_at > NOW() - INTERVAL '24 hours'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 3, "title": "Avg Response Time", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "targets": [{"rawSql": "SELECT AVG(response_time_seconds) as value FROM whatsapp_messages WHERE direction='outbound' AND created_at > NOW() - INTERVAL '24 hours'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 4, "title": "Satisfaction Score", "type": "gauge", "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "targets": [{"rawSql": "SELECT AVG(satisfaction_score) as value FROM whatsapp_messages WHERE satisfaction_score IS NOT NULL AND created_at > NOW() - INTERVAL '7 days'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"max": 5, "thresholds": {"steps": [{"value": 0, "color": "red"}, {"value": 3, "color": "yellow"}, {"value": 4, "color": "green"}]}}}
+    },
+    {
+      "id": 5, "title": "Messages Over Time", "type": "timeseries", "gridPos": {"h": 8, "w": 24, "x": 0, "y": 4},
+      "targets": [
+        {"rawSql": "SELECT date_trunc('hour', created_at) as time, COUNT(*) as value FROM whatsapp_messages WHERE direction='inbound' AND $__timeFilter(created_at) GROUP BY 1 ORDER BY 1", "legendFormat": "Inbound", "refId": "A", "format": "time_series"},
+        {"rawSql": "SELECT date_trunc('hour', created_at) as time, COUNT(*) as value FROM whatsapp_messages WHERE direction='outbound' AND $__timeFilter(created_at) GROUP BY 1 ORDER BY 1", "legendFormat": "Outbound", "refId": "B", "format": "time_series"}
+      ],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    }
+  ],
+  "schemaVersion": 39
+}

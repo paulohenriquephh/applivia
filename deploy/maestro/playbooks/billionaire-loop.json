@@ -1,0 +1,88 @@
+{
+  "name": "Billionaire Loop",
+  "description": "24/7 autonomous business operation loop cycling through all 10 playbooks",
+  "version": "6.0.0",
+  "loop": true,
+  "reset_on_completion": true,
+  "estimated_cycle_hours": 3,
+  "cycles_per_day": 8,
+  "playbooks": [
+    {
+      "id": "00_morning_scan",
+      "file": "00_morning_scan.md",
+      "priority": 1,
+      "estimated_minutes": 15,
+      "crew_required": "market_research"
+    },
+    {
+      "id": "01_lead_generation",
+      "file": "01_lead_generation.md",
+      "priority": 2,
+      "estimated_minutes": 20,
+      "crew_required": "data_enrichment"
+    },
+    {
+      "id": "02_outreach_engine",
+      "file": "02_outreach_engine.md",
+      "priority": 3,
+      "estimated_minutes": 15,
+      "crew_required": "outreach"
+    },
+    {
+      "id": "03_content_creation",
+      "file": "03_content_creation.md",
+      "priority": 4,
+      "estimated_minutes": 25,
+      "crew_required": "content"
+    },
+    {
+      "id": "04_social_posting",
+      "file": "04_social_posting.md",
+      "priority": 5,
+      "estimated_minutes": 10,
+      "crew_required": "social_media"
+    },
+    {
+      "id": "05_competitor_watch",
+      "file": "05_competitor_watch.md",
+      "priority": 6,
+      "estimated_minutes": 15,
+      "crew_required": "market_research"
+    },
+    {
+      "id": "06_revenue_check",
+      "file": "06_revenue_check.md",
+      "priority": 7,
+      "estimated_minutes": 10,
+      "crew_required": "finance"
+    },
+    {
+      "id": "07_client_health",
+      "file": "07_client_health.md",
+      "priority": 8,
+      "estimated_minutes": 15,
+      "crew_required": "support"
+    },
+    {
+      "id": "08_budget_audit",
+      "file": "08_budget_audit.md",
+      "priority": 9,
+      "estimated_minutes": 10,
+      "crew_required": "finance"
+    },
+    {
+      "id": "09_ceo_briefing",
+      "file": "09_ceo_briefing.md",
+      "priority": 10,
+      "estimated_minutes": 15,
+      "crew_required": "coceo"
+    }
+  ],
+  "settings": {
+    "max_concurrent_crews": 2,
+    "budget_check_before_each": true,
+    "skip_on_budget_critical": true,
+    "telegram_notify_cycle_complete": true,
+    "log_to_file": "/var/log/maestro-loop.jsonl"
+  }
+}

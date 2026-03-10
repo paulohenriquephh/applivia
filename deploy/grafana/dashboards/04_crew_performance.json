@@ -1,0 +1,54 @@
+{
+  "uid": "singularity-crew-perf",
+  "title": "04 - Crew Performance",
+  "tags": ["singularity", "crews"],
+  "timezone": "utc",
+  "refresh": "1m",
+  "time": {"from": "now-24h", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "title": "Tasks Created (24h)", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "targets": [{"expr": "increase(crewai_tasks_created_total[24h])", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"}
+    },
+    {
+      "id": 2, "title": "Tasks Completed (24h)", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "targets": [{"expr": "increase(crewai_tasks_completed_total{status=\"completed\"}[24h])", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"}
+    },
+    {
+      "id": 3, "title": "Active Tasks", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "targets": [{"expr": "crewai_active_tasks", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"}
+    },
+    {
+      "id": 4, "title": "Success Rate", "type": "gauge", "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "targets": [{"expr": "increase(crewai_tasks_completed_total{status=\"completed\"}[24h]) / (increase(crewai_tasks_completed_total[24h]) > 0) * 100", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "percent", "max": 100, "thresholds": {"steps": [{"value": 0, "color": "red"}, {"value": 80, "color": "yellow"}, {"value": 95, "color": "green"}]}}}
+    },
+    {
+      "id": 5, "title": "Tasks by Crew", "type": "barchart", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "targets": [{"expr": "increase(crewai_tasks_created_total[24h])", "legendFormat": "{{crew}}", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"}
+    },
+    {
+      "id": 6, "title": "Task Duration by Crew", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "targets": [{"expr": "histogram_quantile(0.95, rate(crewai_task_duration_seconds_bucket[1h]))", "legendFormat": "p95 {{crew}}", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 7, "title": "Cost per Crew (24h)", "type": "piechart", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "targets": [{"expr": "increase(crewai_budget_spend_usd_total[24h])", "legendFormat": "{{model}}", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"}
+    },
+    {
+      "id": 8, "title": "LLM Latency by Model", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "targets": [{"expr": "histogram_quantile(0.95, rate(crewai_llm_latency_seconds_bucket[1h]))", "legendFormat": "p95 {{model}}", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    }
+  ],
+  "schemaVersion": 39
+}

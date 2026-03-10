@@ -1,0 +1,44 @@
+{
+  "uid": "singularity-client-health",
+  "title": "08 - Client Health",
+  "tags": ["singularity", "clients"],
+  "timezone": "utc",
+  "refresh": "5m",
+  "time": {"from": "now-30d", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "title": "Active Clients", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "targets": [{"rawSql": "SELECT COUNT(*) as value FROM clients WHERE status='active'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 2, "title": "Avg Health Score", "type": "gauge", "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "targets": [{"rawSql": "SELECT AVG(health_score) as value FROM clients WHERE status='active'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"max": 100, "thresholds": {"steps": [{"value": 0, "color": "red"}, {"value": 60, "color": "yellow"}, {"value": 80, "color": "green"}]}}}
+    },
+    {
+      "id": 3, "title": "Churn Risk", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "targets": [{"rawSql": "SELECT COUNT(*) as value FROM clients WHERE status='active' AND health_score < 50", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"color": {"fixedColor": "red", "mode": "fixed"}}}
+    },
+    {
+      "id": 4, "title": "MRR per Client", "type": "stat", "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "targets": [{"rawSql": "SELECT AVG(mrr) as value FROM clients WHERE status='active'", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}}
+    },
+    {
+      "id": 5, "title": "Client Health Distribution", "type": "barchart", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "targets": [{"rawSql": "SELECT CASE WHEN health_score >= 80 THEN 'Healthy' WHEN health_score >= 50 THEN 'At Risk' ELSE 'Critical' END as category, COUNT(*) as value FROM clients WHERE status='active' GROUP BY 1", "refId": "A", "format": "table"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    },
+    {
+      "id": 6, "title": "Client Count Over Time", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "targets": [{"rawSql": "SELECT date_trunc('week', created_at) as time, COUNT(*) as value FROM clients WHERE $__timeFilter(created_at) GROUP BY 1 ORDER BY 1", "refId": "A", "format": "time_series"}],
+      "datasource": {"type": "postgres", "uid": "postgresql"}
+    }
+  ],
+  "schemaVersion": 39
+}

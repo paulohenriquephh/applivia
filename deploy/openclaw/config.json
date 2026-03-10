@@ -1,0 +1,46 @@
+{
+  "name": "Singularity V6 Assistant",
+  "version": "6.0.0",
+  "port": 18789,
+  "identity": {
+    "name": "AI Assistant",
+    "description": "Autonomous AI operations assistant",
+    "anonymous": true
+  },
+  "connections": {
+    "crewai_api": {
+      "url": "http://crewai-api:8001",
+      "timeout_seconds": 30
+    },
+    "coceo_agent": {
+      "url": "http://co-ceo-agent:8002",
+      "timeout_seconds": 60
+    },
+    "n8n_webhooks": {
+      "url": "http://n8n-webhooks:5678",
+      "timeout_seconds": 30
+    },
+    "redis": {
+      "url": "redis://redis:6379/3"
+    }
+  },
+  "budget": {
+    "max_per_conversation": 2.00,
+    "warn_threshold": 1.50,
+    "currency": "USD"
+  },
+  "escalation": {
+    "confidence_threshold": 60,
+    "target": "coceo_agent",
+    "notify_telegram": true
+  },
+  "health_check": {
+    "interval_minutes": 30,
+    "timeout_seconds": 10
+  },
+  "daily_report": {
+    "time_utc": "08:00",
+    "via": "telegram"
+  },
+  "skills_directory": "./skills"
+}

@@ -1,0 +1,48 @@
+{
+  "uid": "singularity-system-health",
+  "title": "01 - System Health",
+  "tags": ["singularity", "health"],
+  "timezone": "utc",
+  "refresh": "30s",
+  "time": {"from": "now-6h", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "title": "Service Status", "type": "stat", "gridPos": {"h": 4, "w": 24, "x": 0, "y": 0},
+      "targets": [{"expr": "up", "legendFormat": "{{job}}", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}]}}
+    },
+    {
+      "id": 2, "title": "CPU Usage", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "targets": [{"expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)", "legendFormat": "CPU %", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"}
+    },
+    {
+      "id": 3, "title": "Memory Usage", "type": "timeseries", "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "targets": [{"expr": "(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100", "legendFormat": "RAM %", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"}
+    },
+    {
+      "id": 4, "title": "Disk Usage", "type": "gauge", "gridPos": {"h": 6, "w": 8, "x": 0, "y": 12},
+      "targets": [{"expr": "(1 - node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"}) * 100", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"thresholds": {"steps": [{"value": 0, "color": "green"}, {"value": 70, "color": "yellow"}, {"value": 85, "color": "red"}]}}}
+    },
+    {
+      "id": 5, "title": "Uptime", "type": "stat", "gridPos": {"h": 6, "w": 8, "x": 8, "y": 12},
+      "targets": [{"expr": "time() - process_start_time_seconds{job=\"crewai-api\"}", "legendFormat": "CrewAI", "refId": "A"}],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 6, "title": "Network I/O", "type": "timeseries", "gridPos": {"h": 6, "w": 8, "x": 16, "y": 12},
+      "targets": [
+        {"expr": "rate(node_network_receive_bytes_total[5m])", "legendFormat": "Receive", "refId": "A"},
+        {"expr": "rate(node_network_transmit_bytes_total[5m])", "legendFormat": "Transmit", "refId": "B"}
+      ],
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "Bps"}}
+    }
+  ],
+  "schemaVersion": 39
+}
