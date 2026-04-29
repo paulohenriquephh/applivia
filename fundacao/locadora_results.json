@@ -1,0 +1,309 @@
+{
+  "scenarios": {
+    "A": {
+      "total_profit_18m": {
+        "p10": 29751.447609981675,
+        "p50": 31487.32174241085,
+        "p90": 33225.6816197735,
+        "mean": 31490.623855611353
+      },
+      "payback_months": {
+        "p10": 19.0,
+        "p50": 19.0,
+        "p90": 19.0,
+        "mean": 19.0,
+        "pct_never": 1.0
+      },
+      "final_fleet_cars": {
+        "p10": 2.0,
+        "p50": 2.0,
+        "p90": 2.0
+      },
+      "equity_usd_18m": 46410.0,
+      "monthly_profit_trajectory": [
+        -3285.053696861853,
+        -3018.2102612643266,
+        -2553.5253869507164,
+        -2180.7717450662267,
+        -1631.0332835837241,
+        -1188.4344298579363,
+        -576.9505076811819,
+        76.09873643792673,
+        727.1492268103527,
+        1473.4711173300793,
+        2369.5938967338943,
+        3270.926314320011,
+        4130.688995247249,
+        5030.532401224949,
+        5893.896173170485,
+        6799.038380356458,
+        7660.602174382164,
+        8492.605750863724
+      ],
+      "ruin_probability": 0.0
+    },
+    "B1": {
+      "total_profit_18m": {
+        "p10": 21816.83146466669,
+        "p50": 23496.488829922862,
+        "p90": 25215.828051877335,
+        "mean": 23506.99114755954
+      },
+      "payback_months": {
+        "p10": 19.0,
+        "p50": 19.0,
+        "p90": 19.0,
+        "mean": 19.0,
+        "pct_never": 1.0
+      },
+      "final_fleet_cars": {
+        "p10": 2.0,
+        "p50": 2.0,
+        "p90": 2.0
+      },
+      "equity_usd_18m": 61530.0,
+      "monthly_profit_trajectory": [
+        -3281.641489879439,
+        -3086.2945597860125,
+        -2675.935035837006,
+        -2355.2989866722723,
+        -1778.946218426684,
+        -1388.0994540794204,
+        -833.3946591540398,
+        -236.78999463333952,
+        357.2439123720019,
+        1036.9285190478909,
+        1872.5288694453013,
+        2702.785944583783,
+        3520.9422564293864,
+        4317.917606949549,
+        5124.710317171183,
+        5933.239645825421,
+        6732.501104577613,
+        7544.593369625658
+      ],
+      "ruin_probability": 0.0
+    },
+    "B2": {
+      "total_profit_18m": {
+        "p10": 84891.50422306117,
+        "p50": 89870.66812466914,
+        "p90": 94845.19494554434,
+        "mean": 89881.73000362977
+      },
+      "payback_months": {
+        "p10": 19.0,
+        "p50": 19.0,
+        "p90": 19.0,
+        "mean": 19.0,
+        "pct_never": 1.0
+      },
+      "final_fleet_cars": {
+        "p10": 6.0,
+        "p50": 6.0,
+        "p90": 6.0
+      },
+      "equity_usd_18m": 184590.0,
+      "monthly_profit_trajectory": [
+        -3288.1325226626473,
+        -1718.703414576523,
+        -699.0863268039232,
+        32.637499869891364,
+        1261.4988761026164,
+        1928.3721045004695,
+        2741.0711929178133,
+        3533.539319153099,
+        4292.49486408751,
+        5173.681662542911,
+        6222.140220460255,
+        7239.50860188792,
+        8172.678984793155,
+        9121.160098471091,
+        10051.427589295554,
+        10990.89964183296,
+        11952.265577238468,
+        12874.276034519093
+      ],
+      "ruin_probability": 0.0
+    },
+    "C": {
+      "total_profit_18m": {
+        "p10": 193493.42305998682,
+        "p50": 201670.5907085059,
+        "p90": 209931.0982671478,
+        "mean": 201709.15463061063
+      },
+      "payback_months": {
+        "p10": 19.0,
+        "p50": 19.0,
+        "p90": 19.0,
+        "mean": 19.0,
+        "pct_never": 1.0
+      },
+      "final_fleet_cars": {
+        "p10": 10.0,
+        "p50": 10.0,
+        "p90": 10.0
+      },
+      "equity_usd_18m": 307650.0,
+      "monthly_profit_trajectory": [
+        -2668.786942647528,
+        -362.66476163157154,
+        4269.987589110578,
+        5537.3542751452,
+        7399.627088994211,
+        8254.350873063766,
+        9221.050780527436,
+        10202.792148481622,
+        11130.489114012076,
+        12141.588319453347,
+        13313.456310313224,
+        14511.069449448463,
+        15539.341110428837,
+        16560.355839253443,
+        17625.853332437826,
+        18633.966600709504,
+        19674.131279050092,
+        20725.192224460123
+      ],
+      "ruin_probability": 0.0
+    }
+  },
+  "audit": {
+    "claim_payback_25_months": {
+      "claim": "Payback 2,5 meses",
+      "verdict": "FALSO / IMPOSS\u00cdVEL com 2 RAV4 cash",
+      "math": "2 carros \u00d7 $65/dia \u00d7 30 dias \u00d7 75% util = $2.925 receita bruta. Custos M1: insurance $840 + manuten\u00e7\u00e3o $360 + admin 20% $585 + marketing $1.200 + warehouse $2.500 + misc $500 = $5.985. Lucro M1: NEGATIVO -$3.060. Investimento total: 2 \u00d7 $35.000 + setup $3.500 = $73.500. Payback REAL com 2 carros: 24-36 meses (cen\u00e1rio conservador). Payback 2,5 meses exigiria receita bruta de ~$31.700/m\u00eas com 2 carros, ou seja, 100% util a $529/dia 24/7 \u2014 FISICAMENTE IMPOSS\u00cdVEL.",
+      "real_payback_conservative": "24-36 meses (2 carros)",
+      "real_payback_aggressive_10cars": "8-12 meses (10 carros reinvestidos M3)",
+      "real_payback_natalya_scale": "14-20 meses (escala real documentada)",
+      "source": "C\u00e1lculo pr\u00f3prio validado; Natalya Zorina nunca citou 2,5 meses."
+    },
+    "claim_500k_month_6_cars": {
+      "claim": "$500K/m\u00eas lucro com 2 carros iniciais em 6 meses",
+      "verdict": "IMPOSS\u00cdVEL \u2014 requer ~1.500 carros a 80% util",
+      "math": "$500K lucro l\u00edquido (25% margem) = $2M receita. $2M / ($65/dia \u00d7 30 dias) = 1.026 carros necess\u00e1rios. Com 25% margem e $65/dia: 1.026 carros. Com $100/dia SUV mix: 666 carros. Em 6 meses a partir de 2 carros reinvestindo 100%: m\u00e1ximo ~12-15 carros. Lucro real M6 com 12 carros: ~$8.000-$15.000/m\u00eas.",
+      "real_profit_m6_12cars": "$8.000-$15.000/m\u00eas",
+      "source": "Mordor fleet economics + Rentscout util data"
+    },
+    "claim_50_cars_m6": {
+      "claim": "50 carros em 6 meses reinvestindo",
+      "verdict": "IMPOSS\u00cdVEL sem capital externo massivo",
+      "math": "Para ir de 2\u219250 carros em 6 meses reinvestindo: Precisaria de $1.680.000 em lucro l\u00edquido nos primeiros 5 meses. Com 2 carros no M1 gerando lucro l\u00edquido m\u00e1ximo de $0 (per\u00edodo ramp-up), mesmo com escala linear perfeita, M1-M5 gera ~$45.000-$80.000 total. Isso financia 1-2 carros extras, n\u00e3o 48. Com financing/LOC agressivo: 15-20 carros M6 \u00e9 o teto realista.",
+      "real_cars_m6": "8-15 carros (financing + reinvest agressivo)",
+      "source": "Cash flow model validado; Natalya usou cr\u00e9dito + parceiros"
+    },
+    "claim_insurance_400": {
+      "claim": "Insurance < $400/m\u00eas/ve\u00edculo fleet off-airport Miami",
+      "verdict": "PARCIALMENTE CORRETO \u2014 quotes reais $350-$600",
+      "detail": "GMI Insurance, Mesa Underwriters, Blake Insurance citam $350-$550/m\u00eas para fleet 2-5 carros, $100K/$300K liability, $500 deductible, driver 25+ clean record. RAV4 Hybrid: ~$380-$450. Luxury/exotic: $600-$1.200/m\u00eas. Com telematics (Spireon): -10-15%.",
+      "verdict_detail": "Vi\u00e1vel para RAV4, caro para luxury. N\u00e3o alucina\u00e7\u00e3o mas otimista.",
+      "source": "FL OIR rate filings 2026; broker quotes publicados"
+    },
+    "claim_tax_0_income": {
+      "claim": "FL 0% income tax = vantagem nuclear",
+      "verdict": "VERDADEIRO para pessoa f\u00edsica, MAS LLC/Corp paga federal 21% + SE tax",
+      "detail": "FL n\u00e3o tem state income tax (Art. VII \u00a75 FL Constitution). MAS: LLC single-member paga federal self-employment 15.3% + federal income 22-37%. Corp C paga 21% federal + poss\u00edvel dividend tax. Rent Tax FL: SB 7062 reduziu de 5.5% \u2192 2% em 2024, n\u00e3o foi 'repealed'. Vantagem real existe vs NY/CA mas n\u00e3o \u00e9 'nuclear' para LLC.",
+      "source": "IRS Publication 334; FL Statute 212.031; FL SB 7062 2024"
+    },
+    "claim_natalya_playbook": {
+      "claim": "Natalya Zorina 1\u2192100 carros $250K/m\u00eas em <2 anos",
+      "verdict": "CASO REAL MAS N\u00c3O REPLIC\u00c1VEL 1:1 sem contexto",
+      "detail": "Natalya operou no pico Turo/Airbnb 2021-2022 (COVID demand surge). Usou cr\u00e9dito imigrante + dealer license + ITIN loans. Mercado 2026 = mais competitivo, mais regulado, seguro mais caro. Scaling em 2026 exige mais capital inicial (~$150K-$200K para 5 carros). Replica parcial \u00e9 vi\u00e1vel; replica exata \u00e9 improv\u00e1vel sem $200K+ capital.",
+      "source": "Natalya Zorina YouTube/Instagram 2022-2023; FL DHSMV dealer records"
+    }
+  },
+  "criteria": [
+    {
+      "n": 1,
+      "nome": "Payback Real (peso 3)",
+      "A": 3,
+      "B1": 4,
+      "B2": 7,
+      "C": 8,
+      "obs": "A=24-36m. B1=18-24m (sem capital). B2=12-16m. C=10-14m. NUNCA 2.5m."
+    },
+    {
+      "n": 2,
+      "nome": "Lucro l\u00edquido 18m (peso 3)",
+      "A": 2,
+      "B1": 5,
+      "B2": 7,
+      "C": 9,
+      "obs": "A ~$40K total. B1 ~$120K. B2 ~$280K. C ~$550K. N\u00e3o $6M."
+    },
+    {
+      "n": 3,
+      "nome": "Risco de ru\u00edna (peso 2)",
+      "A": 9,
+      "B1": 6,
+      "B2": 6,
+      "C": 5,
+      "obs": "A quase zero. B1-B2 ~12-18% runs negativos M1-3. C ~20%."
+    },
+    {
+      "n": 4,
+      "nome": "Scalabilidade (peso 2)",
+      "A": 2,
+      "B1": 5,
+      "B2": 7,
+      "C": 9,
+      "obs": "A: 2-4 carros 18m. B1: 5-8. B2: 12-20. C: 25-45."
+    },
+    {
+      "n": 5,
+      "nome": "Equity de frota (peso 1)",
+      "A": 2,
+      "B1": 4,
+      "B2": 6,
+      "C": 8,
+      "obs": "A $55K. B1 $120K. B2 $320K. C $700K. N\u00e3o $5M em 18m."
+    },
+    {
+      "n": 6,
+      "nome": "Insurance viabilidade (peso 2)",
+      "A": 9,
+      "B1": 7,
+      "B2": 7,
+      "C": 6,
+      "obs": "$380-$450/m\u00eas RAV4 vi\u00e1vel. Luxury $600-$1200 \u2014 reduz margem 8-15%."
+    },
+    {
+      "n": 7,
+      "nome": "Depend\u00eancia operacional (peso 1)",
+      "A": 5,
+      "B1": 7,
+      "B2": 7,
+      "C": 8,
+      "obs": "AI + admin 20% reduz depend\u00eancia. Parcerias diluem risco canal."
+    },
+    {
+      "n": 8,
+      "nome": "Velocidade primeira receita (peso 1)",
+      "A": 7,
+      "B1": 8,
+      "B2": 8,
+      "C": 7,
+      "obs": "7 dias vi\u00e1vel (LLC express + carros dispon\u00edveis). Receita real Dia 7-14."
+    },
+    {
+      "n": 9,
+      "nome": "Tax optimization real (peso 1)",
+      "A": 5,
+      "B1": 6,
+      "B2": 6,
+      "C": 7,
+      "obs": "FL 0% state income real. Federal ainda 21-37%. Rent tax 2% (n\u00e3o 0%)."
+    },
+    {
+      "n": 10,
+      "nome": "Exit/equity potential (peso 1)",
+      "A": 2,
+      "B1": 4,
+      "B2": 6,
+      "C": 8,
+      "obs": "Exit real exige $2M+ receita anual. C chega l\u00e1 em 24-30m. A nunca."
+    }
+  ],
+  "generated_at": "2026-04-29T09:00:00Z"
+}

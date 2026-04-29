@@ -27,6 +27,8 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 | `src/app/dashboard/page.tsx` | Dashboard (agents & services) | ✅ Ready |
 | `src/app/layout.tsx` | Root layout | ✅ Ready |
 | `src/app/globals.css` | Global styles | ✅ Ready |
+| `src/app/locadora/page.tsx` | Dashboard Locadora Miami (Monte Carlo) | ✅ Ready |
+| `fundacao/locadora_forense.py` | Simulador Python forense 10.000 runs | ✅ Ready |
 | `fundacao/brain/` | FastAPI backend | ✅ Ready |
 | `fundacao/crewai/` | Multi-agent orchestration | ✅ Ready |
 | `fundacao/dashboard/` | Static HTML dashboard | ✅ Ready |
@@ -96,3 +98,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 29/04/2026 | Locadora Miami FSM: simulador forense Monte Carlo (Python) + dashboard Next.js /locadora |

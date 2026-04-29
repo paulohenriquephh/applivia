@@ -23,10 +23,10 @@ export default function Home() {
             <p className="text-neutral-400">n8n workflows for daily sync & webhooks</p>
           </div>
           
-          <div className="block p-6 bg-neutral-800 rounded-lg">
-            <h2 className="text-2xl font-semibold mb-2">Brain</h2>
-            <p className="text-neutral-400">Python backend for AI processing</p>
-          </div>
+          <a href="/locadora" className="block p-6 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors border border-green-800">
+            <h2 className="text-2xl font-semibold mb-2">🚗 Locadora Miami</h2>
+            <p className="text-neutral-400">Simulador forense Monte Carlo — Auditoria 2026</p>
+          </a>
         </div>
       </div>
     </main>
