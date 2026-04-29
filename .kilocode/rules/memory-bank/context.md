@@ -25,8 +25,17 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 |----------------|---------|--------|
 | `src/app/page.tsx` | Home page | ✅ Ready |
 | `src/app/dashboard/page.tsx` | Dashboard (agents & services) | ✅ Ready |
+| `src/app/locadora/page.tsx` | Miami Car Rental FSM Nuclear | ✅ Ready |
+| `src/app/api/monte-carlo/route.ts` | Monte Carlo 10K runs API | ✅ Ready |
+| `src/app/api/contrato/route.ts` | Contract generator API | ✅ Ready |
+| `src/app/api/auditoria/route.ts` | Forensic audit API | ✅ Ready |
+| `src/components/locadora/MonteCarloSimulator.tsx` | Monte Carlo UI + charts | ✅ Ready |
+| `src/components/locadora/AuditoriaForense.tsx` | 10-criteria weighted audit | ✅ Ready |
+| `src/components/locadora/ContratoGenerator.tsx` | Contract generator | ✅ Ready |
+| `src/components/locadora/MarketingScripts.tsx` | Marketing scripts + checklist | ✅ Ready |
+| `src/components/locadora/KPIDashboard.tsx` | Operational KPI dashboard | ✅ Ready |
 | `src/app/layout.tsx` | Root layout | ✅ Ready |
-| `src/app/globals.css` | Global styles | ✅ Ready |
+| `src/app/globals.css` | Global styles + input-field class | ✅ Ready |
 | `fundacao/brain/` | FastAPI backend | ✅ Ready |
 | `fundacao/crewai/` | Multi-agent orchestration | ✅ Ready |
 | `fundacao/dashboard/` | Static HTML dashboard | ✅ Ready |
@@ -96,3 +105,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 2026-04-29 | Miami Car Rental Nuclear: Monte Carlo 10K runs + Auditoria Forense + Contrato + Marketing + KPI Dashboard adicionados em /locadora |
