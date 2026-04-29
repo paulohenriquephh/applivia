@@ -18,6 +18,8 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 - [x] README.md with project overview and setup instructions
 - [x] .env.example with all required environment variables
 - [x] Next.js `/dashboard` route listing agents and services
+- [x] Forensic audit page for a Miami car-rental thesis with weighted criteria, contradictions, and a reproducible model
+- [x] CLI model at `tools/miami_locadora_forensic_model.py` to test payback assumptions and score strategic options
 
 ## Current Structure
 
@@ -42,6 +44,10 @@ The template is ready. Next steps depend on user requirements:
 1. What type of application to build
 2. What features are needed
 3. Design/branding preferences
+
+Current custom implementation:
+
+4. A Portuguese forensic analysis experience at `/miami-locadora-forense` that converts a high-variance business thesis into a ranked decision memo with explicit anti-thesis review and source ledger
 
 ## Quick Start Guide
 
