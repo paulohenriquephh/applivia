@@ -96,3 +96,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 2026-04-29 | Adicionada auditoria forense `audit/AUDITORIA_FORENSE_LOCADORA_MIAMI_2026.md` (locadora Miami) com scripts reproduzíveis `audit/stress_test_payback.py` e `audit/monte_carlo.py`. Veredito: payback 2,5 mo é matematicamente impossível para frota RAV4; recomendação Híbrido Validado em 3 Estágios. |
