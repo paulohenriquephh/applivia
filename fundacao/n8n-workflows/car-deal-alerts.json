@@ -1,0 +1,127 @@
+{
+  "name": "MAESTRO - Car Deal Hunter Alerts",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "scan-schedule",
+      "name": "Scan every 15 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 280]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CAR_DEAL_ALERTS_API_URL || 'http://maestro-dashboard:3000/api/car-deal-alerts' }}",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "load-blueprint",
+      "name": "Load dashboard blueprint",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [450, 280]
+    },
+    {
+      "parameters": {
+        "jsCode": "const blueprint = $input.first().json; const demoDeals = blueprint.sampleDeals || []; const threshold = blueprint.thresholds?.triggerScore ?? 82; return demoDeals.filter((deal) => deal.score >= threshold).map((deal) => ({ json: { ...deal, domain: blueprint.domain.primary, generatedAt: new Date().toISOString() } }));"
+      },
+      "id": "score-filter",
+      "name": "Filter high-score deals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 280]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.WHATSAPP_API_URL }}",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+                "value": "={{ $env.DEAL_ALERT_WHATSAPP_TO }}"
+            },
+            {
+              "name": "text",
+              "value": "=🚨 Car Deal Hunter\\n{{ $json.vehicle }}\\nScore: {{ $json.score }}/100\\nMercado: {{ $json.market }}\\nOferta alvo: {{ $json.target }}\\nDesconto: {{ $json.discount }}\\nAção: {{ $json.action }}\\nDashboard: https://{{ $json.domain }}/dashboard"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-whatsapp",
+      "name": "Send WhatsApp alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 180]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.DEAL_ALERT_EMAIL_FROM }}",
+        "toEmail": "={{ $env.DEAL_ALERT_EMAIL_TO }}",
+        "subject": "=Car Deal Hunter: {{ $json.vehicle }} com score {{ $json.score }}",
+        "text": "=Novo deal qualificado:\\n\\nVeículo: {{ $json.vehicle }}\\nMercado: {{ $json.market }}\\nOferta alvo: {{ $json.target }}\\nDesconto: {{ $json.discount }}\\nScore: {{ $json.score }}/100\\nAção: {{ $json.action }}\\n\\nAbra: https://{{ $json.domain }}/dashboard"
+      },
+      "id": "send-email",
+      "name": "Send email alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [960, 380]
+    }
+  ],
+  "connections": {
+    "Scan every 15 minutes": {
+      "main": [
+        [
+          {
+            "node": "Load dashboard blueprint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load dashboard blueprint": {
+      "main": [
+        [
+          {
+            "node": "Filter high-score deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter high-score deals": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send email alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "car-deal-alerts-001"
+}
