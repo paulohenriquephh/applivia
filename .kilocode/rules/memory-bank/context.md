@@ -37,11 +37,15 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 
 ## Current Focus
 
-The template is ready. Next steps depend on user requirements:
+**Locadora Miami Nuclear 2026** – Sistema operacional completo implementado em `/locadora`.
 
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
+Módulos ativos:
+- `/locadora` – Dashboard principal com scorecard A vs B e alertas forenses
+- `/locadora/simulador` – Monte Carlo (500 runs browser / 10K server) com P10/P50/P90
+- `/locadora/auditoria` – 10 critérios forenses ponderados com fontes primárias
+- `/locadora/contrato` – Gerador de contrato admin 20% KPIs
+- `/locadora/parcerias` – 5 scripts copy-paste (Airbnb/hotéis/BR/cruise/agências)
+- `/locadora/operacoes` – Cronograma 7 dias com triggers de pivot
 
 ## Quick Start Guide
 
@@ -96,3 +100,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 29/04/2026 | Locadora Miami Nuclear: Monte Carlo + Auditoria Forense + Contrato + Parcerias + Operações |
