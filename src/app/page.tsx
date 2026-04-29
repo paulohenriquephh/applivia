@@ -8,6 +8,16 @@ export default function Home() {
         </p>
         
         <div className="grid md:grid-cols-2 gap-6">
+          <a
+            href="/miami-locadora-forense"
+            className="block p-6 bg-emerald-900/40 border border-emerald-700 rounded-lg hover:bg-emerald-900/60 transition-colors"
+          >
+            <h2 className="text-2xl font-semibold mb-2">Auditoria Miami 2026</h2>
+            <p className="text-emerald-100/80">
+              Veredito forense sobre abrir uma locadora tradicional em Miami com teste explícito de payback.
+            </p>
+          </a>
+
           <a href="/dashboard" className="block p-6 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors">
             <h2 className="text-2xl font-semibold mb-2">Dashboard</h2>
             <p className="text-neutral-400">Monitor your AI agents and automation workflows</p>

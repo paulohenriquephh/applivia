@@ -2,7 +2,7 @@
 
 ## Current State
 
-**Project Status**: ✅ Organized and documented
+**Project Status**: ✅ Organized, documented, and expanded with a forensic decision audit
 
 Full-stack AI automation platform with Next.js frontend and Python/Docker backend services.
 
@@ -18,6 +18,9 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 - [x] README.md with project overview and setup instructions
 - [x] .env.example with all required environment variables
 - [x] Next.js `/dashboard` route listing agents and services
+- [x] New `/miami-locadora-forense` route with a forensic audit of a Miami car rental thesis
+- [x] `src/lib/miami-rental-audit.ts` data model for weighted scenario scoring, claim audits, and payback stress testing
+- [x] Home page card linking directly to the forensic audit
 
 ## Current Structure
 
@@ -26,6 +29,8 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 | `src/app/page.tsx` | Home page | ✅ Ready |
 | `src/app/dashboard/page.tsx` | Dashboard (agents & services) | ✅ Ready |
 | `src/app/layout.tsx` | Root layout | ✅ Ready |
+| `src/app/miami-locadora-forense/page.tsx` | Forensic decision audit page | ✅ Ready |
+| `src/lib/miami-rental-audit.ts` | Audit data, scoring, and payback helpers | ✅ Ready |
 | `src/app/globals.css` | Global styles | ✅ Ready |
 | `fundacao/brain/` | FastAPI backend | ✅ Ready |
 | `fundacao/crewai/` | Multi-agent orchestration | ✅ Ready |
@@ -37,7 +42,7 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 
 ## Current Focus
 
-The template is ready. Next steps depend on user requirements:
+The template now includes a high-density decision-support page. Next steps depend on user requirements:
 
 1. What type of application to build
 2. What features are needed
@@ -96,3 +101,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 2026-04-29 | Added forensic Miami car rental audit route, weighted ranking, claim checks, and payback stress test |
