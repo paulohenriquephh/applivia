@@ -96,3 +96,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 29/04/2026 | Adicionado `fundacao/simulador_locadora_miami.py`: simulador Monte Carlo 10k runs + auditoria forense 10 critérios + ataque à tese payback 2.5 meses + cronograma real corrigido + veredito nuclear para projeto locadora Miami 2026 |
