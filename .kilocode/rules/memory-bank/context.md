@@ -18,13 +18,15 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 - [x] README.md with project overview and setup instructions
 - [x] .env.example with all required environment variables
 - [x] Next.js `/dashboard` route listing agents and services
+- [x] Car Deal Hunter dashboard for below-market vehicle sourcing with WhatsApp/e-mail alert blueprint
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
 | `src/app/page.tsx` | Home page | ✅ Ready |
-| `src/app/dashboard/page.tsx` | Dashboard (agents & services) | ✅ Ready |
+| `src/app/dashboard/page.tsx` | Dashboard (agents, services & Car Deal Hunter) | ✅ Ready |
+| `src/app/api/car-deal-alerts/route.ts` | Car deal alert blueprint API | ✅ Ready |
 | `src/app/layout.tsx` | Root layout | ✅ Ready |
 | `src/app/globals.css` | Global styles | ✅ Ready |
 | `fundacao/brain/` | FastAPI backend | ✅ Ready |
@@ -32,16 +34,13 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 | `fundacao/dashboard/` | Static HTML dashboard | ✅ Ready |
 | `fundacao/docker-compose.yml` | Full stack services | ✅ Ready |
 | `README.md` | Project documentation | ✅ Ready |
-| `.env.example` | Environment variables template | ✅ Ready |
+| `.env.example` | Environment variables template, including domain/e-mail/WhatsApp alert config | ✅ Ready |
+| `fundacao/n8n-workflows/car-deal-alerts.json` | n8n workflow blueprint for car deal alerts | ✅ Ready |
 | `.kilocode/` | AI context & recipes | ✅ Ready |
 
 ## Current Focus
 
-The template is ready. Next steps depend on user requirements:
-
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
+The app now includes a Car Deal Hunter operating view for sourcing vehicles 20-40% below market, scoring deals, and routing high-score opportunities to WhatsApp and e-mail automation.
 
 ## Quick Start Guide
 
@@ -96,3 +95,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 2026-04-29 | Added Car Deal Hunter dashboard, alert blueprint API, n8n workflow, and alert/domain environment variables |
