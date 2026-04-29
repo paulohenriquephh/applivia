@@ -18,6 +18,10 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 - [x] README.md with project overview and setup instructions
 - [x] .env.example with all required environment variables
 - [x] Next.js `/dashboard` route listing agents and services
+- [x] Locadora Miami 2026 Monte Carlo simulator (Python, 10K iterations)
+- [x] Forensic audit module (10 criteria weighted, contra-theses, unknown unknowns)
+- [x] Next.js dashboard `/locadora` with 6 interactive tabs
+- [x] API route `/api/locadora` for simulator execution
 
 ## Current Structure
 
@@ -37,11 +41,11 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 
 ## Current Focus
 
-The template is ready. Next steps depend on user requirements:
+Locadora Miami 2026 — Simulador Forense Monte Carlo integrado ao Next.js:
 
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
+1. Monte Carlo 10K iterações rodando via Python (`fundacao/locadora/simulator.py`)
+2. Dashboard Next.js em `/locadora` com 6 abas (Visão Geral, Monte Carlo, Auditoria, Contra-Teses, Sensibilidade, Fontes)
+3. API em `/api/locadora` que executa simulador e retorna JSON
 
 ## Quick Start Guide
 

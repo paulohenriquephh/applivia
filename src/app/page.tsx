@@ -27,6 +27,11 @@ export default function Home() {
             <h2 className="text-2xl font-semibold mb-2">Brain</h2>
             <p className="text-neutral-400">Python backend for AI processing</p>
           </div>
+          
+          <a href="/locadora" className="block p-6 bg-gradient-to-br from-emerald-900/40 to-neutral-800 rounded-lg hover:from-emerald-800/40 transition-colors border border-emerald-700/20 md:col-span-2">
+            <h2 className="text-2xl font-semibold mb-2">Locadora Miami 2026</h2>
+            <p className="text-neutral-400">Simulador forense Monte Carlo 10K iterações — auditoria nível forense com contra-teses e zero alucinação</p>
+          </a>
         </div>
       </div>
     </main>
