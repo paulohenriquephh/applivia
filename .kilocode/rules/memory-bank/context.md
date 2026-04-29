@@ -18,6 +18,13 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 - [x] README.md with project overview and setup instructions
 - [x] .env.example with all required environment variables
 - [x] Next.js `/dashboard` route listing agents and services
+- [x] Locadora Miami 2026 — Monte Carlo simulation engine (3 scenarios, 1000+ runs)
+- [x] Forensic audit engine with 10 weighted criteria, contradictions, breakpoints
+- [x] Interactive dashboard with 8 chart types (Recharts)
+- [x] 7-day launch checklist with progress tracking
+- [x] Rental contract template generator (FL Statute 559)
+- [x] Partnership script generator (5 channels)
+- [x] 5 nuclear guardrails with measurable triggers
 
 ## Current Structure
 
@@ -25,6 +32,11 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 |----------------|---------|--------|
 | `src/app/page.tsx` | Home page | ✅ Ready |
 | `src/app/dashboard/page.tsx` | Dashboard (agents & services) | ✅ Ready |
+| `src/app/locadora/page.tsx` | Locadora Miami 2026 dashboard | ✅ Ready |
+| `src/app/locadora/components/Charts.tsx` | 8 chart components (Recharts) | ✅ Ready |
+| `src/lib/simulation-engine.ts` | Monte Carlo engine + 3 scenarios | ✅ Ready |
+| `src/lib/forensic-audit.ts` | 10-criterion weighted audit | ✅ Ready |
+| `src/lib/generators.ts` | Checklists, contracts, partnerships, guardrails | ✅ Ready |
 | `src/app/layout.tsx` | Root layout | ✅ Ready |
 | `src/app/globals.css` | Global styles | ✅ Ready |
 | `fundacao/brain/` | FastAPI backend | ✅ Ready |
@@ -37,11 +49,12 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 
 ## Current Focus
 
-The template is ready. Next steps depend on user requirements:
+Locadora Miami 2026 module is live with full simulation, audit, and operational tools.
 
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
+Next steps:
+1. Connect to real insurance quotes and pricing data
+2. Add user authentication for saving checklist state
+3. Expand Monte Carlo with custom parameter editor in UI
 
 ## Quick Start Guide
 
@@ -96,3 +109,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 2026-04-29 | Added Locadora Miami 2026 module: Monte Carlo sim, forensic audit, dashboard, operational tools |
