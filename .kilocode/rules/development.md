@@ -4,9 +4,10 @@
 
 - **Package manager**: Use `bun` (not npm/yarn)
 - **Never run** `next dev` or `bun dev` - the sandbox handles this automatically
+- **Use script form for Bun commands that collide with Bun built-ins**: `bun run build`, `bun run start`
 - **Always commit and push** after completing changes:
   ```bash
-  bun typecheck && bun lint && git add -A && git commit -m "descriptive message" && git push
+  bun typecheck && bun lint && bun run build && git add -A && git commit -m "descriptive message" && git push
   ```
 
 ## Commands
@@ -14,7 +15,7 @@
 | Command | Purpose |
 |---------|---------|
 | `bun install` | Install dependencies |
-| `bun build` | Build production app |
+| `bun run build` | Build production app |
 | `bun lint` | Check code quality |
 | `bun typecheck` | Type checking |
 

@@ -18,6 +18,7 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 - [x] README.md with project overview and setup instructions
 - [x] .env.example with all required environment variables
 - [x] Next.js `/dashboard` route listing agents and services
+- [x] Development environment verified in Cursor Cloud with Bun 1.3.13, Node.js 22.22.2, and Next.js production server on port 3001
 
 ## Current Structure
 
@@ -96,3 +97,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 2026-04-29 | Set up Cursor Cloud development environment, installed Bun dependencies, and documented correct Bun script commands |
