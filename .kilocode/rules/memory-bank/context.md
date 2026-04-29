@@ -96,3 +96,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 2026-04-29 | Cloud dev environment validated: Bun installed at `~/.bun/bin/bun`, frontend dependencies installed with `bun install`, and Next.js verified with `bun run typecheck`, `bun run lint`, `bun run build`, and `bun dev -- --port 3003`. Docker is not available in the current VM, so the Compose backend stack was inspected but not started. |
