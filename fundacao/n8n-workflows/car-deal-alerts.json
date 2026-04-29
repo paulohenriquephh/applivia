@@ -49,7 +49,7 @@
           "parameters": [
             {
               "name": "number",
-                "value": "={{ $env.DEAL_ALERT_WHATSAPP_TO }}"
+              "value": "={{ $env.CAR_DEAL_ALERT_WHATSAPP_TO }}"
             },
             {
               "name": "text",
