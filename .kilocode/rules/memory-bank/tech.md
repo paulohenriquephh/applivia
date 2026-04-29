@@ -22,11 +22,14 @@
 ```bash
 bun install        # Install dependencies
 bun dev            # Start dev server (http://localhost:3000)
-bun build          # Production build
-bun start          # Start production server
+bun run build      # Production build
+bun run start      # Start production server
 bun lint           # Run ESLint
 bun typecheck      # Run TypeScript type checking
 ```
+
+Use `bun run build` and `bun run start` for project scripts because `bun build`
+is Bun's native bundler command, not the Next.js build script.
 
 ## Project Configuration
 
