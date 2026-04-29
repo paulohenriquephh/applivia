@@ -136,7 +136,8 @@ export function runSingleSimulation(
   let cars = params.initialCars;
   let luxuryCars = 0;
   let cumulativeProfit = 0;
-  let cumulativeInvestment = params.initialCars * params.carCostCash;
+  const initialInvestment = params.initialCars * params.carCostCash;
+  let cumulativeInvestment = initialInvestment;
   let paybackMonth: number | null = null;
   let maxDrawdown = 0;
   let peakProfit = 0;
@@ -189,7 +190,7 @@ export function runSingleSimulation(
     const drawdown = peakProfit > 0 ? (peakProfit - cumulativeProfit) / peakProfit : 0;
     if (drawdown > maxDrawdown) maxDrawdown = drawdown;
 
-    if (paybackMonth === null && cumulativeProfit >= cumulativeInvestment) {
+    if (paybackMonth === null && cumulativeProfit >= initialInvestment) {
       paybackMonth = m;
     }
 
