@@ -95,4 +95,5 @@ export async function GET() {
 
 | Date | Changes |
 |------|---------|
+| 2026-04-29 | Development environment validated: installed Bun in the VM, installed frontend dependencies, verified Next.js lint/build/typecheck, ran Next.js dev server on port 3001, and served the legacy static dashboard on port 3333. Docker backend stack could not be started because Docker is not installed in the VM. |
 | Initial | Template created with base setup |
