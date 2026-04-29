@@ -8,6 +8,11 @@ export default function Home() {
         </p>
         
         <div className="grid md:grid-cols-2 gap-6">
+          <a href="/locadora" className="block p-6 bg-gradient-to-br from-emerald-900/40 to-neutral-800 rounded-lg hover:from-emerald-900/60 transition-all border border-emerald-800/30">
+            <h2 className="text-2xl font-semibold mb-2">Locadora Miami 2026</h2>
+            <p className="text-neutral-400">Monte Carlo 10K runs, auditoria forense, plano operacional 7 dias</p>
+          </a>
+
           <a href="/dashboard" className="block p-6 bg-neutral-800 rounded-lg hover:bg-neutral-700 transition-colors">
             <h2 className="text-2xl font-semibold mb-2">Dashboard</h2>
             <p className="text-neutral-400">Monitor your AI agents and automation workflows</p>
@@ -21,11 +26,6 @@ export default function Home() {
           <div className="block p-6 bg-neutral-800 rounded-lg">
             <h2 className="text-2xl font-semibold mb-2">Automation</h2>
             <p className="text-neutral-400">n8n workflows for daily sync & webhooks</p>
-          </div>
-          
-          <div className="block p-6 bg-neutral-800 rounded-lg">
-            <h2 className="text-2xl font-semibold mb-2">Brain</h2>
-            <p className="text-neutral-400">Python backend for AI processing</p>
           </div>
         </div>
       </div>

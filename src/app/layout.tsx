@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Next.js Template",
-  description: "A minimal Next.js starter template",
+  title: "Fundação — Locadora Miami 2026",
+  description: "Monte Carlo simulator, forensic audit, and operational plan for Miami car rental business",
 };
 
 export default function RootLayout({
