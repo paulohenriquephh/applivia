@@ -25,6 +25,9 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 |----------------|---------|--------|
 | `src/app/page.tsx` | Home page | ✅ Ready |
 | `src/app/dashboard/page.tsx` | Dashboard (agents & services) | ✅ Ready |
+| `src/app/miami-rental/page.tsx` | Miami Rental Simulator Dashboard | ✅ Ready |
+| `src/lib/simulation.ts` | Monte Carlo + Deterministic simulation engine | ✅ Ready |
+| `src/lib/forensic-audit.ts` | Forensic audit engine (10 criteria) | ✅ Ready |
 | `src/app/layout.tsx` | Root layout | ✅ Ready |
 | `src/app/globals.css` | Global styles | ✅ Ready |
 | `fundacao/brain/` | FastAPI backend | ✅ Ready |
@@ -37,11 +40,12 @@ Full-stack AI automation platform with Next.js frontend and Python/Docker backen
 
 ## Current Focus
 
-The template is ready. Next steps depend on user requirements:
-
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
+Miami Rental Nuclear Simulator feature added. Dashboard includes:
+- Monte Carlo simulation engine (up to 10K runs)
+- Forensic audit with 10 weighted criteria
+- Interactive charts (Recharts)
+- Contract/script templates
+- 14-day execution cronograma
 
 ## Quick Start Guide
 
@@ -96,3 +100,4 @@ export async function GET() {
 | Date | Changes |
 |------|---------|
 | Initial | Template created with base setup |
+| 2026-04-29 | Added Miami Rental Nuclear Simulator (Monte Carlo, Forensic Audit, Contracts, Cronograma) |
