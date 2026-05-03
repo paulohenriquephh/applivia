@@ -1,98 +1,37 @@
-# Active Context: Applivia — Maestro AI Engine v3
+# Active Context: P2HM Imoveis landing
 
 ## Current State
 
-**Project Status**: ✅ Organized and documented
+**Project Status**: ✅ Landing page entregue e validada localmente
 
-Full-stack AI automation platform with Next.js frontend and Python/Docker backend services.
+O frontend Next.js agora apresenta a oferta `P2HM Imoveis` como uma landing page em portugues com tese, validacoes, tiers de monetizacao, stack, budget, riscos e proxima acao. A rota `/dashboard` continua ativa como pagina secundaria do projeto.
 
 ## Recently Completed
 
-- [x] Base Next.js 16 setup with App Router
-- [x] TypeScript configuration with strict mode
-- [x] Tailwind CSS 4 integration
-- [x] ESLint configuration
-- [x] Memory bank documentation
-- [x] Recipe system for common features
-- [x] Maestro AI Engine backend (brain, crewai, dashboard, n8n, etc.)
-- [x] README.md with project overview and setup instructions
-- [x] .env.example with all required environment variables
-- [x] Next.js `/dashboard` route listing agents and services
+- [x] Repositorio movido de home generica para landing focada em `P2HM Imoveis`
+- [x] Hero section com metricas centrais do funnel ($500, 95-99% automatizado, T+1, ROI)
+- [x] Secoes auditaveis para validacao, monetizacao, execucao, KPIs, riscos e budget
+- [x] Metadata do app ajustada para `pt-BR` e marca `P2HM Imoveis`
+- [x] Memory bank atualizado para refletir o novo produto
 
 ## Current Structure
 
 | File/Directory | Purpose | Status |
 |----------------|---------|--------|
-| `src/app/page.tsx` | Home page | ✅ Ready |
-| `src/app/dashboard/page.tsx` | Dashboard (agents & services) | ✅ Ready |
-| `src/app/layout.tsx` | Root layout | ✅ Ready |
-| `src/app/globals.css` | Global styles | ✅ Ready |
-| `fundacao/brain/` | FastAPI backend | ✅ Ready |
-| `fundacao/crewai/` | Multi-agent orchestration | ✅ Ready |
-| `fundacao/dashboard/` | Static HTML dashboard | ✅ Ready |
-| `fundacao/docker-compose.yml` | Full stack services | ✅ Ready |
-| `README.md` | Project documentation | ✅ Ready |
-| `.env.example` | Environment variables template | ✅ Ready |
-| `.kilocode/` | AI context & recipes | ✅ Ready |
+| `src/app/page.tsx` | Landing page principal P2HM | ✅ Ready |
+| `src/app/dashboard/page.tsx` | Dashboard legado / secundario | ✅ Ready |
+| `src/app/layout.tsx` | Metadata e idioma raiz | ✅ Ready |
+| `src/app/globals.css` | Tailwind global | ✅ Ready |
+| `.kilocode/rules/memory-bank/context.md` | Estado atual da sessao | ✅ Updated |
+| `.kilocode/rules/memory-bank/product.md` | Contexto do produto | ✅ Updated |
+| `.kilocode/rules/memory-bank/architecture.md` | Padroes e arquitetura | ✅ Updated |
 
 ## Current Focus
 
-The template is ready. Next steps depend on user requirements:
-
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
-
-## Quick Start Guide
-
-### To add a new page:
-
-Create a file at `src/app/[route]/page.tsx`:
-```tsx
-export default function NewPage() {
-  return <div>New page content</div>;
-}
-```
-
-### To add components:
-
-Create `src/components/` directory and add components:
-```tsx
-// src/components/ui/Button.tsx
-export function Button({ children }: { children: React.ReactNode }) {
-  return <button className="px-4 py-2 bg-blue-600 text-white rounded">{children}</button>;
-}
-```
-
-### To add a database:
-
-Follow `.kilocode/recipes/add-database.md`
-
-### To add API routes:
-
-Create `src/app/api/[route]/route.ts`:
-```tsx
-import { NextResponse } from "next/server";
-
-export async function GET() {
-  return NextResponse.json({ message: "Hello" });
-}
-```
-
-## Available Recipes
-
-| Recipe | File | Use Case |
-|--------|------|----------|
-| Add Database | `.kilocode/recipes/add-database.md` | Data persistence with Drizzle + SQLite |
-
-## Pending Improvements
-
-- [ ] Add more recipes (auth, email, etc.)
-- [ ] Add example components
-- [ ] Add testing setup recipe
+O projeto esta posicionado como uma pagina de apresentacao/validacao do funnel `Brazilian Buyer Funnel · Miami real estate`, com CTA para a operacao e link para o dashboard existente.
 
 ## Session History
 
 | Date | Changes |
 |------|---------|
-| Initial | Template created with base setup |
+| 2026-05-03 | Home page substituida por landing P2HM Imoveis e metadata ajustada |
