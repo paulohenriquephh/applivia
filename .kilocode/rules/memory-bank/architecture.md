@@ -1,49 +1,39 @@
-# System Patterns: Next.js Starter Template
+# System Patterns: P2HM Imoveis landing
 
 ## Architecture Overview
 
 ```
 src/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx          # Root layout + metadata
-│   ├── page.tsx            # Home page
-│   ├── globals.css         # Tailwind imports + global styles
-│   └── favicon.ico         # Site icon
+├── app/
+│   ├── layout.tsx          # Metadata raiz + idioma pt-BR
+│   ├── page.tsx            # Landing page P2HM Imoveis
+│   ├── dashboard/page.tsx  # Dashboard secundario legado
+│   ├── globals.css         # Import global do Tailwind
+│   └── favicon.ico
 └── (expand as needed)
-    ├── components/         # React components (add when needed)
-    ├── lib/                # Utilities and helpers (add when needed)
-    └── db/                 # Database files (add via recipe)
+    ├── components/         # Componentes reutilizaveis futuros
+    ├── lib/                # Helpers/utilitarios futuros
+    └── db/                 # Persistencia, se o produto evoluir
 ```
 
 ## Key Design Patterns
 
 ### 1. App Router Pattern
 
-Uses Next.js App Router with file-based routing:
+Usa Next.js App Router com duas rotas principais ativas:
 ```
 src/app/
-├── page.tsx           # Route: /
-├── about/page.tsx     # Route: /about
-├── blog/
-│   ├── page.tsx       # Route: /blog
-│   └── [slug]/page.tsx # Route: /blog/:slug
-└── api/
-    └── route.ts       # API Route: /api
+├── page.tsx              # Route: / (landing P2HM)
+└── dashboard/page.tsx    # Route: /dashboard
 ```
 
-### 2. Component Organization Pattern (When Expanding)
+### 2. Conteudo orientado por arrays
 
-```
-src/components/
-├── ui/                # Reusable UI components (Button, Card, etc.)
-├── layout/            # Layout components (Header, Footer)
-├── sections/          # Page sections (Hero, Features, etc.)
-└── forms/             # Form components
-```
+A landing principal usa arrays locais para renderizar secoes repetidas como validacoes, tiers, canais, stack, KPIs e budget. Isso reduz markup duplicado e facilita evoluir o conteudo sem introduzir estado cliente desnecessario.
 
-### 3. Server Components by Default
+### 3. Server Components por padrao
 
-All components are Server Components unless marked with `"use client"`:
+Toda a interface continua em Server Components. Nao ha necessidade de `"use client"` porque a experiencia atual e inteiramente estatica/informativa.
 ```tsx
 // Server Component (default) - can fetch data, access DB
 export default function Page() {
@@ -60,7 +50,7 @@ export default function Counter() {
 
 ### 4. Layout Pattern
 
-Layouts wrap pages and can be nested:
+O `layout.tsx` centraliza metadata e idioma do documento. A pagina principal fica livre para focar apenas na narrativa visual da landing.
 ```tsx
 // src/app/layout.tsx - Root layout
 export default function RootLayout({ children }: { children: React.ReactNode }) {
