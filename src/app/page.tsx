@@ -205,7 +205,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="proxima-acao" className="border-b border-white/10">
+      <section className="border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
           <SectionTitle
             eyebrow="Live state validado"
@@ -243,7 +243,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="proxima-acao" className="border-b border-white/10">
+      <section className="border-b border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
           <SectionTitle
             eyebrow="Resposta direta"
